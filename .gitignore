@@ -1,8 +1,12 @@
 node_modules/
 logs/
 .env
+luboil_env
 
 # data
 data_insertion.log
 future_temperature_data.json
 temperature_data.json
+oilcsvtojson.py
+*.csv
+*.json

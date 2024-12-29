@@ -1,0 +1,21 @@
+name: Deploy locally
+
+on:
+  push:
+    branches:
+      - main  # 每次推送到 main 分支時觸發
+
+jobs:
+  deploy:
+    runs-on: [self-hosted]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
+    
+    - name: Build and Start Docker Containers
+      run: |
+        cd ~/Desktop/Develope/luboil_six &&
+        docker-compose down &&
+        docker-compose up -d --build

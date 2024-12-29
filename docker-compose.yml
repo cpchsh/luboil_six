@@ -32,71 +32,71 @@ services:
     volumes:
       - mongo_data:/data/db # 將/data/db指向名為 'mongo_data'的volumns
   
-  # 用來生成假資料(generate_faked_data.py)，再執行update_mongobd.py
-  fakedata_generator:
-    image: python:3.9
-    container_name: fakedata_generator
-    depends_on:
-      - mongo 
-    volumes:
-      # 將當前資料夾（含 generate_faked_data.py, update_mongodb.py)留到容器的 /app
-      - ./:/app
-    working_dir: /app
-    command: >
-      bash -c "
-        python generate_faked_data.py &&
-        pip install --no-cache-dir pymongo &&
-        python update_mongodb.py
-      "
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-      MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
-  
-  #一次性容器，用來執行搬移全部資料的update_mongodb.py
-  # data_inserter:
+  # # 用來生成假資料(generate_faked_data.py)，再執行update_mongobd.py
+  # fakedata_generator:
   #   image: python:3.9
-  #   container_name: data_inserter
+  #   container_name: fakedata_generator
   #   depends_on:
-  #     - mongo
+  #     - mongo 
   #   volumes:
-  #     # 將本機當前資料夾(包含 update_mongodb.py)掛載到容器的 /app
+  #     # 將當前資料夾（含 generate_faked_data.py, update_mongodb.py)留到容器的 /app
   #     - ./:/app
-  #   working_dir: /app 
-  #   # command: 先安裝 pymongo，再執行 updae_mongodb.py
+  #   working_dir: /app
   #   command: >
   #     bash -c "
-  #       pip install pymongo &&
+  #       python generate_faked_data.py &&
+  #       pip install --no-cache-dir pymongo &&
   #       python update_mongodb.py
   #     "
-    
   #   environment:
   #     MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
   #     MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
   #     MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
   #     MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
-    
   
-  # 執行predict_future_temperature.py
-  predictor:
+  #一次性容器，用來執行搬移全部資料的update_mongodb.py
+  data_inserter:
     image: python:3.9
-    container_name: predictor
+    container_name: data_inserter
     depends_on:
       - mongo
     volumes:
+      # 將本機當前資料夾(包含 update_mongodb.py)掛載到容器的 /app
       - ./:/app
-    working_dir: /app
+    working_dir: /app 
+    # command: 先安裝 pymongo，再執行 updae_mongodb.py
     command: >
       bash -c "
-        pip install --no-cache-dir pymongo prophet &&
-        python predict_future_temperatures.py
+        pip install pymongo &&
+        python update_mongodbnew.py
       "
+    
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
       MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
+    
+  
+  # # 執行predict_future_temperature.py
+  # predictor:
+  #   image: python:3.9
+  #   container_name: predictor
+  #   depends_on:
+  #     - mongo
+  #   volumes:
+  #     - ./:/app
+  #   working_dir: /app
+  #   command: >
+  #     bash -c "
+  #       pip install --no-cache-dir pymongo prophet &&
+  #       python predict_future_temperatures.py
+  #     "
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+  #     MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+  #     MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+  #     MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
 
 volumes:
   mongo_data:

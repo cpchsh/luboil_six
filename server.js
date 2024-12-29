@@ -19,7 +19,7 @@ console.log("Attempting to connect to MongoDB...");
 MongoClient.connect(process.env.MONGODB_URI)
   .then(client => {
     console.log('Connected to Database');
-    db = client.db('sensor_data_db'); 
+    db = client.db('oildata_data_db'); 
   })
   .catch(error => {
     console.error("Error connecting to MongoDB:", error);
@@ -28,32 +28,32 @@ MongoClient.connect(process.env.MONGODB_URI)
 app.use(express.json());
 
 // 新增的 /api/temperature_data 路由
-app.get('/api/temperature_data', async (req, res) => {
-  console.log("Received request for /api/temperature_data");
+app.get('/api/luboil_data', async (req, res) => {
+  console.log("Received request for /api/luboil_data");
 
   try {
-    const temperatureData = await db.collection('temperature_data').find({}).toArray();
-    console.log("Data fetched from 'temperature_data':", temperatureData);
-    res.json(temperatureData);
+    const luboilData = await db.collection('luboil_data').find({}).toArray();
+    console.log("Data fetched from 'luboil_data':", temperatureData);
+    res.json(luboilData);
   } catch (error) {
-    console.error("Error fetching data from 'temperature_data':", error);
-    res.status(500).json({ error: "Failed to fetch data from 'temperature_data'" });
+    console.error("Error fetching data from 'luboil_data':", error);
+    res.status(500).json({ error: "Failed to fetch data from 'luboil_data'" });
   }
 });
 
-// 新增的 /api/future_temperature_data 路由
-app.get('/api/future_temperature_data', async (req, res) => {
-  console.log("Received request for /api/future_temperature_data");
+// // 新增的 /api/future_temperature_data 路由
+// app.get('/api/future_temperature_data', async (req, res) => {
+//   console.log("Received request for /api/future_temperature_data");
 
-  try {
-    const futuretemperatureData = await db.collection('future_temperature_data').find({}).toArray();
-    console.log("Data fetched from 'future_temperature_data':", futuretemperatureData);
-    res.json(futuretemperatureData);
-  } catch (error) {
-    console.error("Error fetching data from 'temperature_data':", error);
-    res.status(500).json({ error: "Failed to fetch data from 'temperature_data'" });
-  }
-});
+//   try {
+//     const futuretemperatureData = await db.collection('future_temperature_data').find({}).toArray();
+//     console.log("Data fetched from 'future_temperature_data':", futuretemperatureData);
+//     res.json(futuretemperatureData);
+//   } catch (error) {
+//     console.error("Error fetching data from 'temperature_data':", error);
+//     res.status(500).json({ error: "Failed to fetch data from 'temperature_data'" });
+//   }
+// });
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
