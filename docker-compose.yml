@@ -57,7 +57,7 @@ services:
   #一次性容器，用來執行搬移全部資料的update_mongodb.py
   data_inserter:
     image: python:3.9
-    container_name: data_inserter
+    #container_name: data_inserter
     depends_on:
       - mongo
     volumes:
