@@ -35,7 +35,7 @@ app.get('/api/luboil_data', async (req, res) => {
 
   try {
     const luboilData = await db.collection('luboil_data').find({}).toArray();
-    console.log("Data fetched from 'luboil_data':", temperatureData);
+    console.log("Data fetched from 'luboil_data':", luboilData);
     res.json(luboilData);
   } catch (error) {
     console.error("Error fetching data from 'luboil_data':", error);
