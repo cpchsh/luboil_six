@@ -19,7 +19,9 @@ console.log("Attempting to connect to MongoDB...");
 MongoClient.connect(process.env.MONGODB_URI)
   .then(client => {
     console.log('Connected to Database');
-    db = client.db('oildata_data_db'); 
+    //db = client.db('luboil_data_db'); 
+    const dbName = process.env.MONGODB_URI.split('/').pop().split('?')[0];
+    db = client.db(dbName);
   })
   .catch(error => {
     console.error("Error connecting to MongoDB:", error);

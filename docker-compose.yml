@@ -55,27 +55,27 @@ services:
   #     MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
   
   #一次性容器，用來執行搬移全部資料的update_mongodb.py
-  data_inserter:
-    image: python:3.9
-    #container_name: data_inserter
-    depends_on:
-      - mongo
-    volumes:
-      # 將本機當前資料夾(包含 update_mongodb.py)掛載到容器的 /app
-      - ./:/app
-    working_dir: /app 
-    # command: 先安裝 pymongo，再執行 updae_mongodb.py
-    command: >
-      bash -c "
-        pip install pymongo &&
-        python update_mongodbnew.py
-      "
+  # data_inserter:
+  #   image: python:3.9
+  #   #container_name: data_inserter
+  #   depends_on:
+  #     - mongo
+  #   volumes:
+  #     # 將本機當前資料夾(包含 update_mongodb.py)掛載到容器的 /app
+  #     - ./:/app
+  #   working_dir: /app 
+  #   # command: 先安裝 pymongo，再執行 updae_mongodb.py
+  #   command: >
+  #     bash -c "
+  #       pip install pymongo &&
+  #       python update_mongodbnew.py
+  #     "
     
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-      MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+  #     MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+  #     MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+  #     MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
     
   
   # # 執行predict_future_temperature.py
