@@ -49,7 +49,7 @@ const App = () => {
   
   return (
     <div>
-      <h1>Temperature Data Visualization</h1>
+      <h1>Luboil Data Visualization</h1>
 
       {/* 上方圖表:歷史數據(可篩選) */}
       <FilterControls

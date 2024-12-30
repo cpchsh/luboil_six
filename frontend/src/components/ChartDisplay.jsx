@@ -55,12 +55,11 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
       (a, b) => new Date(a) - new Date(b)
     );
 
+    // 收集所有產品名稱
     const products = Array.from(
       new Set([
         ...limitedData.map((item) => item.productName),
-        ...(futureData
-          ? futureData.map((item) => item.productName)
-          : []),
+        ...(futureData ? futureData.map((item) => item.productName) : []),
       ])
     );
 
@@ -78,10 +77,19 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
       const historicalDataset = {
         label: `${product} (Historical)`,
         data: timestamps.map((timestamp) => {
-          const match = data.find(
+          // 找出所有 (productName===product && timestamp===timestamp) 的紀錄
+          const matches = data.find(
             (item) => item.productName === product && item.timestamp === timestamp
           );
-          return match ? parseFloat(match.quantity) : null;
+          if (matches.length === 0) return null;
+          
+          // 將所有 matches 的 quantity 加總
+          const totalQuantity = matches.reduce((acc, item) => {
+            const qty = parseFloat(item.quantity) || 0;
+            return acc + qty;
+          }, 0);
+
+          return totalQuantity;
         }),
         borderColor: predefinedColors[index % predefinedColors.length],
         spanGaps: true, // 啟用 gap 自動連接
@@ -89,11 +97,14 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
         fill: false //不填滿
       };
 
+      // 若沒有 futureData, 就只回傳 historical
       if (!futureData.length) {
         return [historicalDataset];
       }
 
-      // 預測資料（中間虛線）
+      // ========================
+      // 2) Prediction Dataset  
+      // ========================
       const predictionDataset = {
             label: `${product} (Prediction)`,
             data: timestamps.map((timestamp) => {
