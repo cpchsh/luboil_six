@@ -55,11 +55,11 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
       (a, b) => new Date(a) - new Date(b)
     );
 
-    const warehouses = Array.from(
+    const products = Array.from(
       new Set([
-        ...limitedData.map((item) => item.location),
+        ...limitedData.map((item) => item.productName),
         ...(futureData
-          ? futureData.map((item) => item.location)
+          ? futureData.map((item) => item.productName)
           : []),
       ])
     );
@@ -68,20 +68,20 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
       "rgba(255, 0, 0, 1)", // red
       "rgba(0, 255, 0, 1)", // green
       "rgba(0, 0, 255, 1)", // blue
-      // "rgba(255, 165, 0, 1)", // orange
-      // "rgba(128, 0, 128, 1)", // purple
-      // "rgba(255, 255, 0, 1)", // yellow
+      "rgba(255, 165, 0, 1)", // orange
+      "rgba(128, 0, 128, 1)", // purple
+      "rgba(255, 255, 0, 1)", // yellow
     ];
 
-    const datasets = warehouses.flatMap((warehouse, index) => {
+    const datasets = products.flatMap((product, index) => {
       // 原始數據
       const historicalDataset = {
-        label: `${warehouse} (Historical)`,
+        label: `${product} (Historical)`,
         data: timestamps.map((timestamp) => {
           const match = data.find(
-            (item) => item.location === warehouse && item.timestamp === timestamp
+            (item) => item.productName === product && item.timestamp === timestamp
           );
-          return match ? parseFloat(match.temperature) : null;
+          return match ? parseFloat(match.quantity) : null;
         }),
         borderColor: predefinedColors[index % predefinedColors.length],
         spanGaps: true, // 啟用 gap 自動連接
@@ -95,12 +95,12 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
 
       // 預測資料（中間虛線）
       const predictionDataset = {
-            label: `${warehouse} (Prediction)`,
+            label: `${product} (Prediction)`,
             data: timestamps.map((timestamp) => {
               const match = futureData.find(
-                (item) => item.location === warehouse && item.timestamp === timestamp
+                (item) => item.productName === product && item.timestamp === timestamp
               );
-              return match ? parseFloat(match.temperature) : null;
+              return match ? parseFloat(match.quantity) : null;
             }),
             borderColor: predefinedColors[index % predefinedColors.length],
             borderDash: [5, 5], //虛線模式
@@ -111,13 +111,13 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
       // 下界 (Lower Bound)
       const lowerBoundData =  timestamps.map((timestamp) =>{
         const lbMatch = futureData.find(
-          (item) => item.location === warehouse && item.timestamp === timestamp 
+          (item) => item.location === product && item.timestamp === timestamp 
         )?.lower_bound;
         return lbMatch !== undefined ? parseFloat(lbMatch) : null;
       });
       
       const lowerBoundDataset = {
-        label: `${warehouse} (Lower Bound)`,
+        label: `${product} (Lower Bound)`,
         data: lowerBoundData,
         borderColor: 'rgba(0,0,0,0)', // 不顯示線，透明邊線
         pointRadius: 0,
@@ -128,13 +128,13 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
       // 上界 (Upper Bound) - 將fill指向前一個資料集(即 lowerBoundDataset)
       const upperBoundData = timestamps.map((timestamp) => {
         const ubMatch = futureData.find(
-          (item) => item.location === warehouse && item.timestamp === timestamp 
+          (item) => item.location === product && item.timestamp === timestamp 
         )?.upper_bound;
         return ubMatch !== undefined ? parseFloat(ubMatch) : null;
       })
 
       const upperBoundDataset = {
-        label: `${warehouse} (Confidence Interval)`,
+        label: `${product} (Confidence Interval)`,
         data: upperBoundData,
         borderColor: 'rgba(0,0,0,0)', //不顯示線
         backgroundColor: predefinedColors[index % predefinedColors.length].replace("1)", "0.2)"), //半透明背景
@@ -198,7 +198,7 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
               y: {
                 title: {
                   display: true,
-                  text: "Temperature (°C)",
+                  text: "Quantity(桶)",
                 },
                 beginAtZero: true,
               },
