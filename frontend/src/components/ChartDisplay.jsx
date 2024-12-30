@@ -73,12 +73,14 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
     ];
 
     const datasets = products.flatMap((product, index) => {
-      // 原始數據
+      // ===========================
+      // 1) Historical Dataset
+      // ===========================
       const historicalDataset = {
         label: `${product} (Historical)`,
         data: timestamps.map((timestamp) => {
           // 找出所有 (productName===product && timestamp===timestamp) 的紀錄
-          const matches = data.find(
+          const matches = data.filter(
             (item) => item.productName === product && item.timestamp === timestamp
           );
           if (matches.length === 0) return null;
