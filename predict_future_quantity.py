@@ -48,8 +48,10 @@ def predict_quantity(data, periods = 10, freq = "D"):
     grouped["y"] = grouped["quantity"]
 
     # 不需要的欄位丟掉
-    grouped = grouped.drop(columns=["date", "quantity"], inplace=True)
+    grouped = grouped.drop(columns=["date", "quantity"])
 
+    if grouped.empty:
+        raise ValueError("No valid data after grouping - possibly empty dataset")
     # 建立 Prophet 模型並訓練
     model = Prophet(interval_width=0.8)
     model.fit(grouped)
@@ -107,9 +109,9 @@ if __name__ == "__main__":
 
         # 幫預測結果加上 productName
         for row in future_data:
-            item["productName"] = product
+            row["productName"] = product
             # Convert Timestamp to ISO string 
-            item["ds"] = item["ds"].isoformat() + "Z"
+            row["ds"] = row["ds"].isoformat() + "Z"
 
         # 加到總 predictions
         all_predictions.extend(future_data)
