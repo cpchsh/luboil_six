@@ -29,7 +29,7 @@ MongoClient.connect(process.env.MONGODB_URI)
 
 app.use(express.json());
 
-// 新增的 /api/temperature_data 路由
+// 新增的 /api/luboil_data 路由
 app.get('/api/luboil_data', async (req, res) => {
   console.log("Received request for /api/luboil_data");
 
@@ -43,19 +43,19 @@ app.get('/api/luboil_data', async (req, res) => {
   }
 });
 
-// // 新增的 /api/future_temperature_data 路由
-// app.get('/api/future_temperature_data', async (req, res) => {
-//   console.log("Received request for /api/future_temperature_data");
+// 新增的 /api/future_luboil_data 路由
+app.get('/api/future_luboil_data', async (req, res) => {
+  console.log("Received request for /api/future_luboil_data");
 
-//   try {
-//     const futuretemperatureData = await db.collection('future_temperature_data').find({}).toArray();
-//     console.log("Data fetched from 'future_temperature_data':", futuretemperatureData);
-//     res.json(futuretemperatureData);
-//   } catch (error) {
-//     console.error("Error fetching data from 'temperature_data':", error);
-//     res.status(500).json({ error: "Failed to fetch data from 'temperature_data'" });
-//   }
-// });
+  try {
+    const futureluboilData = await db.collection('future_quantity_data').find({}).toArray();
+    console.log("Data fetched from 'future_quantity_data':", futureluboilData);
+    res.json(futureluboilData);
+  } catch (error) {
+    console.error("Error fetching data from 'future luboil_data':", error);
+    res.status(500).json({ error: "Failed to fetch data from 'future luboil_data'" });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
