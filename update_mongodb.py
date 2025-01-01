@@ -8,8 +8,7 @@ from datetime import datetime
 logging.basicConfig(filename="data_insertion.log", level=logging.INFO, format="%(asctime)s %(levelname)s: %(message)s")
 
 # 讀取 MongoDB URI
-#mongodb_uri = os.getenv("MONGODB_URI")
-mongodb_uri = os.getenv("MONGODB_URI") or "mongodb://hao134:xuul8969@mongo:27017/sensor_data_db?authSource=admin"
+mongodb_uri = os.getenv("MONGODB_URI")
 
 client = MongoClient(mongodb_uri)
 

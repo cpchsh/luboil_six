@@ -78,25 +78,25 @@ services:
   #     MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
     
   
-  # # 執行predict_future_temperature.py
-  # predictor:
-  #   image: python:3.9
-  #   container_name: predictor
-  #   depends_on:
-  #     - mongo
-  #   volumes:
-  #     - ./:/app
-  #   working_dir: /app
-  #   command: >
-  #     bash -c "
-  #       pip install --no-cache-dir pymongo prophet &&
-  #       python predict_future_temperatures.py
-  #     "
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-  #     MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-  #     MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-  #     MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
+  # 執行predict_future_quantity.py
+  predictor:
+    image: python:3.9
+    container_name: predictor
+    depends_on:
+      - mongo
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: >
+      bash -c "
+        pip install --no-cache-dir pymongo prophet &&
+        python predict_future_quantity.py
+      "
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+      MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
 
 volumes:
   mongo_data:
