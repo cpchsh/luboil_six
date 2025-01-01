@@ -48,11 +48,11 @@ def predict_quantity(data, periods = 10, freq = "D"):
     grouped["y"] = grouped["quantity"]
 
     # 不需要的欄位丟掉
-    grouped = grouped.drop(columns=["date", "quantity"])
+    grouped = grouped.drop(columns=["date", "quantity"], inplace=True)
 
     # 建立 Prophet 模型並訓練
     model = Prophet(interval_width=0.8)
-    model.fit(df)
+    model.fit(grouped)
 
     # 建立未來時間範圍
     future = model.make_future_dataframe(periods=periods, freq=freq)
@@ -87,9 +87,12 @@ if __name__ == "__main__":
     # 從 MongoDB獲取數據
     raw_data = get_data_from_mongodb()
 
+    #建立一個存放所有預測結果的清單
+    all_predictions = []
+
     # 依 productName分組
     product_names =set(item["productName"] for item in raw_data if "productName" in item)
-    predictions = []
+    
 
     for product in product_names:
         #取出該 productName 的資料
