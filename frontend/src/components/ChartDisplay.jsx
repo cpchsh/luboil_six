@@ -124,7 +124,7 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
       // 下界 (Lower Bound)
       const lowerBoundData =  timestamps.map((timestamp) =>{
         const lbMatch = futureData.find(
-          (item) => item.location === product && item.timestamp === timestamp 
+          (item) => item.productName === product && item.timestamp === timestamp 
         )?.lower_bound;
         return lbMatch !== undefined ? parseFloat(lbMatch) : null;
       });
@@ -141,7 +141,7 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
       // 上界 (Upper Bound) - 將fill指向前一個資料集(即 lowerBoundDataset)
       const upperBoundData = timestamps.map((timestamp) => {
         const ubMatch = futureData.find(
-          (item) => item.location === product && item.timestamp === timestamp 
+          (item) => item.productName === product && item.timestamp === timestamp 
         )?.upper_bound;
         return ubMatch !== undefined ? parseFloat(ubMatch) : null;
       })
