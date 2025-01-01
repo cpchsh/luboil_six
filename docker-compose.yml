@@ -81,7 +81,7 @@ services:
   # 執行predict_future_quantity.py
   predictor:
     image: python:3.9
-    container_name: predictor
+    #container_name: predictor
     depends_on:
       - mongo
     volumes:
