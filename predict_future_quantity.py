@@ -72,7 +72,7 @@ def insert_future_predictions_to_mongodb(predictions):
       prediction["upper_bound"] = prediction.pop("yhat_upper")
 
     client = MongoClient(os.getenv("MONGODB_URI"))
-    db = client["sensor_data_db"]
+    db = client["luboil_data_db"]
     collection = db["future_quantity_data"]
 
     # 刪除舊數據
