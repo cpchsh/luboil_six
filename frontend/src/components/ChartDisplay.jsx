@@ -184,7 +184,7 @@ const ChartDisplay = ({
           text: "Quantity(桶)",
         },
         beginAtZero: true,
-        // 若 Prophet 可能出現負值而您不想看到，可加 min: 0
+        min: 0
       },
     },
   };
