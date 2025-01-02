@@ -68,8 +68,15 @@ const App = () => {
             title="Filtered Historical Data"
           />
         </div>
+        <div className="col-6">
+          <ChartDisplay
+            data={filteredData} 
+            title="Filtered Historical Data2"
+          />
+        </div>
+
       
-      {/*右邊： Historical + Predictions */}
+      {/*坐下邊： Historical + Predictions */}
         <div className="col-6">
           <ChartDisplay 
             data={data} 
