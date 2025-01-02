@@ -39,8 +39,8 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
 
     // 若是下方圖表，歷史數據限制為36個點，其他圖表則使用`historyLimit`
     const limitedData = 
-      title.includes("Predictions") && historyLimit > 36
-        ? limitData(data, 36)
+      title.includes("Predictions") && historyLimit > 72
+        ? limitData(data, 72)
         : limitData(data, historyLimit);
 
     //const limitedFutureData = futureData ? limitData(futureData, 102) : [];
@@ -80,7 +80,7 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
         label: `${product} (Historical)`,
         data: timestamps.map((timestamp) => {
           // 找出所有 (productName===product && timestamp===timestamp) 的紀錄
-          const matches = limitedData.filter(
+          const matches = data.filter(
             (item) => item.productName === product && item.timestamp === timestamp
           );
           if (matches.length === 0) return null;
