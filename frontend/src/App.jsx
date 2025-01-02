@@ -5,6 +5,7 @@ import ChartDisplay from "./components/ChartDisplay";
 import { fetchLuboilData, fetchFuturePredictions } from "./services/api";
 
 
+
 const App = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -48,7 +49,7 @@ const App = () => {
   }
   
   return (
-    <div style={{width: "100%", boxSizing: "border-box", padding: "1rem"}}>
+    <div className="container-fluid">
       <h1>Luboil Data Visualization</h1>
 
       {/* 上方圖表:歷史數據(可篩選) */}
@@ -59,9 +60,9 @@ const App = () => {
         setDateRange={setDateRange}
         setSelectedWarehouses={setSelectedWarehouse}
       />
-      {/* 用 flex 將兩張圖並排 */}
-      <div style={{ display: "flex",width: "100%", gap: "1rem" }}>
-        <div style={{ flex: "1" }}>
+      {/* 使用 Bootstrap Row + 兩個 Col */}
+      <div className="row">
+        <div className="col-6">
           <ChartDisplay
             data={filteredData} 
             title="Filtered Historical Data"
@@ -69,7 +70,7 @@ const App = () => {
         </div>
       
       {/*右邊： Historical + Predictions */}
-        <div style={{ flex: "1" }}>
+        <div className="col-6">
           <ChartDisplay 
             data={data} 
             futureData={futureData} 
