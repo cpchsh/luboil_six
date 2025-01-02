@@ -10,8 +10,15 @@ const App = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [futureData, setFutureData] = useState([]); //預測數據
-  const [dateRange, setDateRange] = useState({ start: "", end: "" });
-  const [selectedWarehouse, setSelectedWarehouse] = useState(["All"]);
+  // 2. 左圖的篩選條件 & 篩選後資料
+  const [leftDateRange, setLeftDateRange] = useState({ start: "", end: "" });
+  const [leftWarehouse, setLeftWarehouse] = useState(["All"]);
+  const [leftFilteredData, setLeftFilteredData] = useState([]);
+
+  // 3. 右圖的篩選條件 & 篩選後資料
+  const [rightDateRange, setRightDateRange] = useState({ start: "", end: "" });
+  const [rightWarehouse, setRightWarehouse] = useState(["All"]);
+  const [rightFilteredData, setRightFilteredData] = useState([]);
   const [error, setError] = useState(null);
   
   // 當初次進入時獲取歷史資料
@@ -27,21 +34,36 @@ const App = () => {
       .catch((error) => {setError(error.message);});
   }, []);
 
-  // 根據user選擇來過濾資料
+  // 左圖：依 leftDateRange, leftWarehouse 過濾
   useEffect(() => {
     const filtered= data.filter((item) => {
       const date = new Date(item.timestamp);
       const inDateRange =
-        (!dateRange.start || date >= new Date(dateRange.start)) &&
-        (!dateRange.end || date <= new Date(dateRange.end));
+        (!leftDateRange.start || date >= new Date(leftDateRange.start)) &&
+        (!leftDateRange.end || date <= new Date(leftDateRange.end));
 
       const matchesWarehouse =
-        selectedWarehouse.includes("All") || 
-        selectedWarehouse.includes(item.location);
+        leftWarehouse.includes("All") || 
+        leftWarehouse.includes(item.location);
       return inDateRange && matchesWarehouse;
     });
     setFilteredData(filtered)
-  }, [data, dateRange, selectedWarehouse]);
+  }, [data, leftDateRange, leftWarehouse]);
+
+  // 右圖：依 rightDateRange, rightWarehouse 過濾
+  useEffect(() => {
+    const filtered = data.filter((item) => {
+      const date = new Date(item.timestamp);
+      const inDateRange =
+        (!rightDateRange.start || date >= new Date(rightDateRange.start)) &&
+        (!rightDateRange.end || date <= new Date(rightDateRange.end));
+      const matchesWarehouse =
+        rightWarehouse.includes("All") || rightWarehouse.includes(item.location);
+
+      return inDateRange && matchesWarehouse;
+    });
+    setRightFilteredData(filtered);
+  }, [data, rightDateRange, rightWarehouse]);
 
   
   if (error) {
@@ -52,38 +74,49 @@ const App = () => {
     <div className="container-fluid">
       <h1>Luboil Data Visualization</h1>
 
-      {/* 上方圖表:歷史數據(可篩選) */}
-      <FilterControls
-        data={data}
-        dateRange={dateRange}
-        selectedWarehouses={selectedWarehouse}
-        setDateRange={setDateRange}
-        setSelectedWarehouses={setSelectedWarehouse}
-      />
-      {/* 使用 Bootstrap Row + 兩個 Col */}
       <div className="row">
-        <div className="col-6">
-          <ChartDisplay
-            data={filteredData} 
-            title="Filtered Historical Data"
-          />
-        </div>
-        <div className="col-6">
-          <ChartDisplay
-            data={filteredData} 
-            title="Filtered Historical Data2"
-          />
-        </div>
+          {/* 左圖：col-6 */}
+          <div className="col-6">
+            {/*左圖篩選*/}
+            <FilterControls
+              data={data}
+              dateRange={leftDateRange}
+              selectedWarehouses={leftWarehouse}
+              setDateRange={setLeftDateRange}
+              setSelectedWarehouses={setLeftWarehouse}
+            />
+            {/*左圖的 Chart */}
+            <ChartDisplay
+              data={leftFilteredData} 
+              title="Left Filtered Historical Data"
+            />
+          </div>
+
+          {/* 右圖：col-6 */}
+          <div className="col-6">
+            {/* 右圖篩選 */}
+            <FilterControls
+              data={data}
+              dateRange={rightDateRange}
+              selectedWarehouses={rightWarehouse}
+              setDateRange={setRightDateRange}
+              setSelectedWarehouses={setRightWarehouse}
+            />
+            <ChartDisplay
+              data={rightFilteredData} 
+              title="Right Filtered Historical Data2"
+            />
+          </div>
 
       
-      {/*坐下邊： Historical + Predictions */}
-        <div className="col-6">
-          <ChartDisplay 
-            data={data} 
-            futureData={futureData} 
-            title="Historical + Predictions (All Products)"
-          />
-        </div>
+      {/*左下邊： Historical + Predictions */}
+          <div className="col-6">
+            <ChartDisplay 
+              data={data} 
+              futureData={futureData} 
+              title="Historical + Predictions (All Products)"
+            />
+          </div>
       </div>
     </div>
   );
