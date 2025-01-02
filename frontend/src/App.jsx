@@ -48,7 +48,7 @@ const App = () => {
   }
   
   return (
-    <div>
+    <div style={{width: "100%", boxSizing: "border-box", padding: "1rem"}}>
       <h1>Luboil Data Visualization</h1>
 
       {/* 上方圖表:歷史數據(可篩選) */}
@@ -60,7 +60,7 @@ const App = () => {
         setSelectedWarehouses={setSelectedWarehouse}
       />
       {/* 用 flex 將兩張圖並排 */}
-      <div style={{ display: "flex", gap: "1rem" }}>
+      <div style={{ display: "flex",width: "100%", gap: "1rem" }}>
         <div style={{ flex: "1" }}>
           <ChartDisplay
             data={filteredData} 
