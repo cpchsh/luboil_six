@@ -184,6 +184,7 @@ const ChartDisplay = ({ data, title, futureData = []}) => {
 
     // 6) Chart options
     const options = {
+      maintainAspectRatio: false,
       responsive: true,
       plugins: {
         legend: {
@@ -219,7 +220,7 @@ const ChartDisplay = ({ data, title, futureData = []}) => {
     };
 
     return (
-      <div>
+      <div style={{ width: "100%", height: "600px"}}>
         <h2>{title}</h2>
         <Line data={chartData} options={options} />
       </div>
