@@ -7,12 +7,11 @@ const Parent = () => {
     const [historicalData, setHistoricalData] = useState([]);
     const [futureData, setFutureData] = useState([]);
     const [error, setError] = useState(null);
-    const [data, setData] = useState([]);
 
     // 當初次進入時獲取歷史資料
     useEffect(() => {
       fetchLuboilData()
-        .then((fetchedData) => setData(fetchedData))
+        .then((fetchedData) => setHistoricalData(fetchedData))
         .catch((error) => {setError(error.message);});
     }, []);
 
@@ -21,6 +20,10 @@ const Parent = () => {
         .then((predictions) => setFutureData(predictions))
         .catch((error) => {setError(error.message);});
     }, []);
+
+    if (error) {
+        return <p style={{ color: "red" }}>Error: {error} </p>
+    }
 
     // 收集所有可能的產品
     const allProducts = Array.from(
