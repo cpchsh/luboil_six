@@ -59,16 +59,24 @@ const App = () => {
         setDateRange={setDateRange}
         setSelectedWarehouses={setSelectedWarehouse}
       />
-      <ChartDisplay
-        data={filteredData} 
-        title="Filtered Historical Data"
-      />
-      {/*下方圖表:歷史數據+預測數據*/}
-      <ChartDisplay 
-        data={data} 
-        futureData={futureData} 
-        title="Historical + Predictions (All Products)"
-      />
+      {/* 用 flex 將兩張圖並排 */}
+      <div style={{ display: "flex", gap: "1rem" }}>
+        <div style={{ flex: "1" }}>
+          <ChartDisplay
+            data={filteredData} 
+            title="Filtered Historical Data"
+          />
+        </div>
+      
+      {/*右邊： Historical + Predictions */}
+        <div style={{ flex: "1" }}>
+          <ChartDisplay 
+            data={data} 
+            futureData={futureData} 
+            title="Historical + Predictions (All Products)"
+          />
+        </div>
+      </div>
     </div>
   );
 }
