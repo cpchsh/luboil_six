@@ -80,7 +80,7 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
         label: `${product} (Historical)`,
         data: timestamps.map((timestamp) => {
           // 找出所有 (productName===product && timestamp===timestamp) 的紀錄
-          const matches = data.filter(
+          const matches = limitedData.filter(
             (item) => item.productName === product && item.timestamp === timestamp
           );
           if (matches.length === 0) return null;
