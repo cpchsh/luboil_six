@@ -23,27 +23,54 @@ ChartJS.register(
   Filler
 )
 
-const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
+/**
+ * 根據「最後一筆」的timestamp，往前days天做篩選
+ * @param {Array}  data - 歷史資料 (每筆至少含timestamp)
+ * @param {Number} days - 要顯示最近幾天
+ * @returns {Array} 過濾後的資料
+ */
+
+const filterByDays = (data, days) => {
+    if (!data.length) return data;
+    const sorted = [...data].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    const lastTimestamp = new Date(sorted[sorted.length - 1].timestamp);
+
+    // cutoff = 最後一筆日期 往前 days 天
+    const cutoff = new Date(lastTimestamp.getTime() - days * 24 * 60 * 60 * 1000);
+    // 只保留 timestamp >= cutoff 的資料
+    return sorted.filter(d => new Date(d.timestamp) >= cutoff);
+}
+
+
+const ChartDisplay = ({ data, title, futureData = []}) => {
     if (!data.length) {
       return <p>No data available for {title}</p>;
     }
+
+    // 依title 判斷要顯示幾天
+    // - 若 title 含 "Predictions" => 只顯示近15天
+    // - 否則 => 近30天
+    const daysToShow = title.includes("Predictions") ? 15: 30;
+
+    // 1) 過濾「最近N天」歷史資料
+    const limitedData = filterByDays(data, daysToShow);
     
-    // 限制數據點到最近的個數(limit)，並確保排序
-    const limitData = (data, limit) => {
-      const sortedData = [...data].sort(
-        (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-      );
-      const startIndex = Math.max(0, sortedData.length - limit);
-      return sortedData.slice(startIndex, sortedData.length);
-    }
+    // // 限制數據點到最近的個數(limit)，並確保排序
+    // const limitData = (data, limit) => {
+    //   const sortedData = [...data].sort(
+    //     (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+    //   );
+    //   const startIndex = Math.max(0, sortedData.length - limit);
+    //   return sortedData.slice(startIndex, sortedData.length);
+    // }
 
-    // 若是下方圖表，歷史數據限制為36個點，其他圖表則使用`historyLimit`
-    const limitedData = 
-      title.includes("Predictions") && historyLimit > 72
-        ? limitData(data, 72)
-        : limitData(data, historyLimit);
+    // // 若是下方圖表，歷史數據限制為72個點，其他圖表則使用`historyLimit`
+    // const limitedData = 
+    //   title.includes("Predictions") && historyLimit > 72
+    //     ? limitData(data, 72)
+    //     : limitData(data, historyLimit);
 
-    //const limitedFutureData = futureData ? limitData(futureData, 102) : [];
+    // //const limitedFutureData = futureData ? limitData(futureData, 102) : [];
 
     // 將歷史及未來的timestamp全部收集起來
     const allTimestamps = [
@@ -55,7 +82,7 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
       (a, b) => new Date(a) - new Date(b)
     );
 
-    // 收集所有產品名稱
+    // 3)收集所有產品名稱
     const products = Array.from(
       new Set([
         ...limitedData.map((item) => item.productName),
@@ -64,17 +91,18 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
     );
 
     const predefinedColors = [
-      "rgba(255, 0, 0, 1)", // red
-      "rgba(0, 255, 0, 1)", // green
-      "rgba(0, 0, 255, 1)", // blue
-      "rgba(255, 165, 0, 1)", // orange
-      "rgba(128, 0, 128, 1)", // purple
-      "rgba(255, 255, 0, 1)", // yellow
-    ];
+        "rgba(231, 76, 60, 1)",    // 紅色 (Red)
+        "rgba(46, 204, 113, 1)",   // 綠色 (Green)
+        "rgba(52, 152, 219, 1)",   // 藍色 (Blue)
+        "rgba(241, 196, 15, 1)",   // 黃色 (Yellow)
+        "rgba(155, 89, 182, 1)",   // 紫色 (Purple)
+        "rgba(243, 156, 18, 1)",   // 橙色 (Orange)
+    ]
 
     const datasets = products.flatMap((product, index) => {
+      const color = predefinedColors[index % predefinedColors.length];
       // ===========================
-      // 1) Historical Dataset
+      //  Historical Dataset
       // ===========================
       const historicalDataset = {
         label: `${product} (Historical)`,
@@ -93,7 +121,7 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
 
           return totalQuantity;
         }),
-        borderColor: predefinedColors[index % predefinedColors.length],
+        borderColor: color,
         spanGaps: true, // 啟用 gap 自動連接
         borderWidth: 2,
         fill: false //不填滿
@@ -115,7 +143,7 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
               );
               return match ? parseFloat(match.quantity) : null;
             }),
-            borderColor: predefinedColors[index % predefinedColors.length],
+            borderColor: color,
             borderDash: [5, 5], //虛線模式
             spanGaps: true,
             borderWidth: 2,
@@ -150,7 +178,7 @@ const ChartDisplay = ({ data, title, futureData = [], historyLimit = 102 }) => {
         label: `${product} (Confidence Interval)`,
         data: upperBoundData,
         borderColor: 'rgba(0,0,0,0)', //不顯示線
-        backgroundColor: predefinedColors[index % predefinedColors.length].replace("1)", "0.2)"), //半透明背景
+        backgroundColor: color.replace("1)", "0.2)"), //半透明背景
         pointRadius: 0,
         borderWidth: 0,
         spanGaps: true,
