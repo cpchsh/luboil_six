@@ -55,22 +55,6 @@ const ChartDisplay = ({ data, title, futureData = []}) => {
     // 1) 過濾「最近N天」歷史資料
     const limitedData = filterByDays(data, daysToShow);
     
-    // // 限制數據點到最近的個數(limit)，並確保排序
-    // const limitData = (data, limit) => {
-    //   const sortedData = [...data].sort(
-    //     (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-    //   );
-    //   const startIndex = Math.max(0, sortedData.length - limit);
-    //   return sortedData.slice(startIndex, sortedData.length);
-    // }
-
-    // // 若是下方圖表，歷史數據限制為72個點，其他圖表則使用`historyLimit`
-    // const limitedData = 
-    //   title.includes("Predictions") && historyLimit > 72
-    //     ? limitData(data, 72)
-    //     : limitData(data, historyLimit);
-
-    // //const limitedFutureData = futureData ? limitData(futureData, 102) : [];
 
     // 將歷史及未來的timestamp全部收集起來
     const allTimestamps = [
@@ -99,11 +83,10 @@ const ChartDisplay = ({ data, title, futureData = []}) => {
         "rgba(243, 156, 18, 1)",   // 橙色 (Orange)
     ]
 
+    // 4) 建立 datasets 
     const datasets = products.flatMap((product, index) => {
       const color = predefinedColors[index % predefinedColors.length];
-      // ===========================
-      //  Historical Dataset
-      // ===========================
+      // =========================== Historical Dataset===========================
       const historicalDataset = {
         label: `${product} (Historical)`,
         data: timestamps.map((timestamp) => {
@@ -132,9 +115,7 @@ const ChartDisplay = ({ data, title, futureData = []}) => {
         return [historicalDataset];
       }
 
-      // ========================
-      // 2) Prediction Dataset  
-      // ========================
+      // =======================Prediction Dataset========================
       const predictionDataset = {
             label: `${product} (Prediction)`,
             data: timestamps.map((timestamp) => {
@@ -193,62 +174,59 @@ const ChartDisplay = ({ data, title, futureData = []}) => {
       return [historicalDataset, lowerBoundDataset, upperBoundDataset, predictionDataset]
     });
 
-
+    // 5) 組裝 chartData
     const chartData = {
       labels: timestamps.map((timestamp) => 
-        moment(timestamp).format("YYYY-MM-DD HH:mm")
+        moment(timestamp).format("YYYY-MM-DD")// HH:mm")
       ),
       datasets: datasets.flat().filter(Boolean), //過濾掉 null
     };
-      
+
+    // 6) Chart options
+    const options = {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          position: "top",
+          labels: {
+            filter: (legendItem) => {
+              const txt = legendItem.text || "";
+              // 只顯示 Historical / Prediction
+              if (txt.includes("Lower Bound") || txt.includes("Confidence Interval")) {
+                return false;
+              }
+              return true;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Timestamp"
+          }
+        },
+        y: {
+          title: {
+            display: true,
+            text: "Quantity(桶)"
+          },
+          beginAtZero: true
+        }
+      }
+    };
 
     return (
       <div>
         <h2>{title}</h2>
-        <Line
-          data={chartData}
-          options={{
-            responsive: true,
-            plugins: {
-              legend: {
-                display: true,
-                position: "top",
-                labels: {
-                  // 使用 filter 函式過濾掉不想縣市的圖例
-                  filter: (legendItem, chartData) => {
-                    const text = legendItem.text || "";
-                    // 只顯示 Historical 和 Prediction, 隱藏 Lower Bound , Condidence Interval
-                    if (
-                      text.includes("Lower Bound") ||
-                      text.includes("Confidence Interval")
-                    ) {
-                      return false;
-                    }
-                    return true;
-                  }
-                }
-              },
-            },
-            scales: {
-              x: {
-                title: {
-                  display: true,
-                  text: "Timestamp",
-                },
-              },
-              y: {
-                title: {
-                  display: true,
-                  text: "Quantity(桶)",
-                },
-                beginAtZero: true,
-              },
-            },
-          }}
-        />  
+        <Line data={chartData} options={options} />
       </div>
-      
     );
   };
-  
+
   export default ChartDisplay;
+      
+
+    
