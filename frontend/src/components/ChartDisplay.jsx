@@ -50,7 +50,7 @@ const ChartDisplay = ({ data, title, futureData = []}) => {
     // 依title 判斷要顯示幾天
     // - 若 title 含 "Predictions" => 只顯示近15天
     // - 否則 => 近30天
-    const daysToShow = title.includes("Predictions") ? 15: 30;
+    const daysToShow = title.includes("Predictions") ? 15: 90;
 
     // 1) 過濾「最近N天」歷史資料
     const limitedData = filterByDays(data, daysToShow);
