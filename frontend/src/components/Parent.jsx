@@ -50,7 +50,7 @@ const Parent = () => {
               data={historicalData}
               futureData={futureData}
               title="Historical + Predictions (All products)"
-              maxHistory={200} // 顯示最後200筆歷史
+              maxHistory={100} // 顯示最後100筆歷史
               colorMap={colorMap}
             />
         </div>
