@@ -17,6 +17,11 @@ const App = () => {
   const [rightDateRange, setRightDateRange] = useState({ start: "", end: "" });
   const [rightWarehouse, setRightWarehouse] = useState(["All"]);
   const [rightFilteredData, setRightFilteredData] = useState([]);
+
+  // 4. 右圖的篩選條件 & 篩選後資料
+  const [monthDateRange, setMonthDateRange] = useState({ start: "", end: "" });
+  const [monthWarehouse, setMonthWarehouse] = useState(["All"]);
+  const [monthFilteredData, setMonthFilteredData] = useState([]);
   const [error, setError] = useState(null);
 
   // 當初次進入時獲取歷史資料
@@ -66,6 +71,22 @@ const App = () => {
     });
     setRightFilteredData(filtered);
   }, [data, rightDateRange, rightWarehouse]);
+
+  // 月資料圖
+  useEffect(() => {
+    const filtered = data.filter((item) => {
+      const date = new Date(item.timestamp);
+      const inDateRange =
+        (!monthDateRange.start || date >= new Date(monthDateRange.start)) &&
+        (!monthDateRange.end || date <= new Date(monthDateRange.end));
+      const matchesWarehouse =
+        monthWarehouse.includes("All") ||
+        monthWarehouse.includes(item.location);
+
+      return inDateRange && matchesWarehouse;
+    });
+    setMonthFilteredData(filtered);
+  }, [data, monthDateRange, monthWarehouse]);
 
   if (error) {
     return <p style={{ color: "red" }}>Error: {error}</p>;
@@ -120,16 +141,16 @@ const App = () => {
         </div>
         <div className="col-6">
           {/*左圖篩選*/}
-          {/* <FilterControls
+          <FilterControls
             data={data}
-            dateRange={leftDateRange}
-            selectedWarehouses={leftWarehouse}
-            setDateRange={setLeftDateRange}
-            setSelectedWarehouses={setLeftWarehouse}
-          /> */}
+            dateRange={monthDateRange}
+            selectedWarehouses={monthWarehouse}
+            setDateRange={setMonthDateRange}
+            setSelectedWarehouses={setMonthWarehouse}
+          />
           {/*左圖的 Chart */}
           <ChartDisplayMonth
-            data={data}
+            data={monthFilteredData}
             title="Monthly Historical Data"
           />
         </div>
