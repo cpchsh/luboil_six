@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import FilterControls from "./components/FilterControls";
 import ChartDisplay from "./components/ChartDisplay";
+import ChartDisplayMonth from "./components/ChartDisplayMonth";
 //import { fetchTemperatureData, fetchFuturePredictions } from "./services/api";
 import { fetchLuboilData, fetchFuturePredictions } from "./services/api";
 
@@ -115,6 +116,21 @@ const App = () => {
             data={data}
             futureData={futureData}
             title="Historical + Predictions (All Products)"
+          />
+        </div>
+        <div className="col-6">
+          {/*左圖篩選*/}
+          {/* <FilterControls
+            data={data}
+            dateRange={leftDateRange}
+            selectedWarehouses={leftWarehouse}
+            setDateRange={setLeftDateRange}
+            setSelectedWarehouses={setLeftWarehouse}
+          /> */}
+          {/*左圖的 Chart */}
+          <ChartDisplayMonth
+            data={data}
+            title="Monthly Historical Data"
           />
         </div>
       </div>
