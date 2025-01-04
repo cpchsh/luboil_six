@@ -108,7 +108,7 @@ const App = () => {
           />
         </div>
       </div>
-      <div className="row mt-4">
+      <div className="row mt-5">
         {/*左下邊： Historical + Predictions */}
         <div className="col-6">
           <ChartDisplay
