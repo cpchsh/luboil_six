@@ -5,7 +5,7 @@ import ChartDisplay from "../components/ChartDisplay";
 import { fetchLuboilData, fetchFuturePredictions } from "../services/api";
 import PropTypes from "prop-types";
 
-const LeftChartContainer = ({ includeFutureData = false }) => {
+const ChartContainer = ({ includeFutureData = false }) => {
   const [data, setData] = useState([]);
   const [futureData, setFutureData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -44,32 +44,42 @@ const LeftChartContainer = ({ includeFutureData = false }) => {
     setFilteredData(filtered);
   }, [data, dateRange, selectedWarehouse]);
 
+  // 檢查是否有 futureData
+  const hasFutureData = includeFutureData && futureData && futureData.length >0;
+
   return (
     <div>
-      <h2>Left Chart (Daily)</h2>
-      <FilterControls
-        data={data}
-        dateRange={dateRange}
-        selectedWarehouses={selectedWarehouse}
-        setDateRange={setDateRange}
-        setSelectedWarehouses={setSelectedWarehouse}
-      />
-      <ChartDisplay
-        data={filteredData}
-        {...(includeFutureData && { futureData })}
-        title="Left Filtered Historical Data"
-      />
+      {hasFutureData ? (
+        <ChartDisplay
+          data={data}
+          futureData={futureData}
+          title="Historical + Future Daily Data"
+        />
+      ) : (
+        <div>
+        <FilterControls
+          data={data}
+          dateRange={dateRange}
+          selectedWarehouses={selectedWarehouse}
+          setDateRange={setDateRange}
+          setSelectedWarehouses={setSelectedWarehouse}
+        />
+        <ChartDisplay
+          data={filteredData}
+          title={"Filtered Historical Data"}
+        />
+        </div>
+      )}
     </div>
   );
 };
 
 // 定義 propTypes 和 defaultProps
-LeftChartContainer.propTypes = {
+ChartContainer.propTypes = {
   includeFutureData: PropTypes.bool,
 };
-
-LeftChartContainer.defaultProps = {
+ChartContainer.defaultProps = {
   includeFutureData: false,
 };
 
-export default LeftChartContainer;
+export default ChartContainer;

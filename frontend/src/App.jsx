@@ -1,6 +1,6 @@
 // App.jsx
 import React from "react";
-import LeftChartContainer from "./containers/LeftChartContainer";
+import ChartContainer from "./containers/ChartContainer";
 //import MonthChartContainer from "./containers/MonthChartContainer";
 
 function App() {
@@ -11,19 +11,19 @@ function App() {
       <div className="row">
         {/* 左圖 (日) - 不含 futureData */}
         <div className="col-6">
-          <LeftChartContainer includeFutureData={false} />
+          <ChartContainer includeFutureData={false} />
         </div>
 
         {/* 右圖 (月) */}
         <div className="col-6">
-          <LeftChartContainer includeFutureData={false} />
+          <ChartContainer includeFutureData={false} />
         </div>
       </div>
 
       <div className="row mt-4">
         {/* 左圖 (日) - 含 futureData */}
         <div className="col-6">
-          <LeftChartContainer includeFutureData={true} />
+          <ChartContainer includeFutureData={true} />
         </div>
       </div>
     </div>
