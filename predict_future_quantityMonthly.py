@@ -44,7 +44,7 @@ def predict_quantity_monthly(data, periods = 5, freq = "MS"):
     grouped = df.groupby("year_month", as_index=False)["quantity"].sum()
     
     # 3) Prophet 需要欄位 ds, y, ds = (該月份)
-    grouped["ds"] = grouped["year_month"].dt.to_timestamp(freq="MS")
+    grouped["ds"] = grouped["year_month"].dt.to_timestamp(freq="M")
     grouped["y"] = grouped["quantity"]
 
     # 不需要的欄位丟掉
