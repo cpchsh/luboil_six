@@ -24,39 +24,39 @@ def get_data_from_mongodb():
     }))
     return data
 
-def predict_quantity(data, periods = 10, freq = "D"):
+def predict_quantity_monthly(data, periods = 5, freq = "MS"):
     """
-    使用 Prophet 預測未來 'periods' 個時間點 (以天為單位 freq='D')
+    使用 Prophet 預測未來 'periods' 個時間點 (月首 freq='MS')
     data 應為同一個 productName的記錄
     """
     df = pd.DataFrame(data)
 
-    #將timestamp轉換為datetime格式
-    df["timestamp"] = pd.to_datetime(df["timestamp"], format="mixed", errors = "coerce")
+    # 1)將timestamp轉換為datetime格式
+    df["timestamp"] = pd.to_datetime(df["timestamp"], errors = "coerce")
     if df["timestamp"].isnull().any():
         raise ValueError("Some timestamps could not be parsed. Please check your data.")
     
-    # 以「日期」為單位做加總
-    # 1)取出date (不分時分秒)
-    df["date"] = df["timestamp"].dt.date
+    # 2) 以「年月」為單位做加總
+    # 取出該筆交易的 (year, month)
+    df["year_month"] = df["timestamp"].dt.to_period("M")  # ex: 2024-01
 
-    # 2)對同一天的 quantity 做 sum
-    grouped = df.groupby("date", as_index=False)["quantity"].sum()
+    # 對同一 year_month 的 quantity 做 sum
+    grouped = df.groupby("year_month", as_index=False)["quantity"].sum()
     
-    # 3) Prophet 需要欄位 ds, y
-    grouped["ds"] = pd.to_datetime(grouped["date"]) # 轉回 datetime
+    # 3) Prophet 需要欄位 ds, y, ds = (該月份)
+    grouped["ds"] = grouped["year_month"].dt.to_timestamp(freq="M")
     grouped["y"] = grouped["quantity"]
 
     # 不需要的欄位丟掉
-    grouped = grouped.drop(columns=["date", "quantity"])
+    grouped = grouped.drop(columns=["year_month", "quantity"])
 
     if grouped.empty:
         raise ValueError("No valid data after grouping - possibly empty dataset")
-    # 建立 Prophet 模型並訓練
+    # 4) 建立 Prophet 模型並訓練
     model = Prophet(interval_width=0.8)
     model.fit(grouped)
 
-    # 建立未來時間範圍
+    # 5) 建立未來時間範圍
     future = model.make_future_dataframe(periods=periods, freq=freq)
     forecast = model.predict(future)
 
@@ -75,7 +75,7 @@ def insert_future_predictions_to_mongodb(predictions):
 
     client = MongoClient(os.getenv("MONGODB_URI"))
     db = client["luboil_data_db"]
-    collection = db["future_quantity_data"]
+    collection = db["future_quantity_monthly"]
 
     # 刪除舊數據
     collection.delete_many({})
@@ -83,16 +83,16 @@ def insert_future_predictions_to_mongodb(predictions):
 
     # 插入新數據
     collection.insert_many(predictions)
-    print("New future quantity data inserted.")
+    print("New monthly future quantity data inserted.")
 
 if __name__ == "__main__":
-    # 從 MongoDB獲取數據
+    # 1) 從 MongoDB獲取原始數據
     raw_data = get_data_from_mongodb()
 
-    #建立一個存放所有預測結果的清單
+    #2) 建立一個存放所有預測結果的清單
     all_predictions = []
 
-    # 依 productName分組
+    # 3) 依 productName分組
     product_names =set(item["productName"] for item in raw_data if "productName" in item)
     
 
@@ -104,8 +104,8 @@ if __name__ == "__main__":
             if item.get("productName") == product
         ]
 
-        # 進行預測
-        future_data = predict_quantity(product_data, periods=10, freq="D")
+        # 4) 進行月預測，預測未來5個月
+        future_data = predict_quantity_monthly(product_data, periods=5, freq="MS")
 
         # 幫預測結果加上 productName
         for row in future_data:
@@ -116,10 +116,10 @@ if __name__ == "__main__":
         # 加到總 predictions
         all_predictions.extend(future_data)
 
-    # 保存預測數據寫入 JSON檔
-    with open("future_quantity_data.json", "w", encoding="utf-8") as f:
+    # 5) 保存預測數據寫入 JSON檔
+    with open("future_quantity_monthly.json", "w", encoding="utf-8") as f:
         json.dump(all_predictions, f, indent=4, ensure_ascii=False)
-    print("Future predictions saved to future_quantity_data.json.")
+    print("Future monthly predictions saved to future_quantity_monthly.json.")
 
     # 寫回 MongoDB
     insert_future_predictions_to_mongodb(all_predictions)

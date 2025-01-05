@@ -53,7 +53,21 @@ app.get('/api/future_luboil_data', async (req, res) => {
     res.json(futureluboilData);
   } catch (error) {
     console.error("Error fetching data from 'future luboil_data':", error);
-    res.status(500).json({ error: "Failed to fetch data from 'future luboil_data'" });
+    res.status(500).json({ error: "Failed to fetch data from 'future_luboil_data'" });
+  }
+});
+
+// 新增的 /api/future_luboil_monthly 路由
+app.get('/api/future_luboil_monthly', async (req, res) => {
+  console.log("Received request for /api/future_luboil_monthly");
+
+  try {
+    const futureluboilMonthly = await db.collection('future_quantity_monthly').find({}).toArray();
+    console.log("Data fetched from 'future_quantity_monthly':", futureluboilMonthly);
+    res.json(futureluboilMonthly);
+  } catch (error) {
+    console.error("Error fetching data from 'future luboil_monthly':", error);
+    res.status(500).json({ error: "Failed to fetch data from 'future_luboil_monthly'" });
   }
 });
 

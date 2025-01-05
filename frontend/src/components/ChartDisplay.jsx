@@ -11,6 +11,7 @@ import {
   Filler
 } from "chart.js";
 import moment from "moment";
+import { buildColorMap } from "./utils/colors";
 
 ChartJS.register(
   CategoryScale,
@@ -74,18 +75,21 @@ const ChartDisplay = ({ data, title, futureData = []}) => {
       ])
     );
 
-    const predefinedColors = [
-        "rgba(231, 76, 60, 1)",    // 紅色 (Red)
-        "rgba(46, 204, 113, 1)",   // 綠色 (Green)
-        "rgba(52, 152, 219, 1)",   // 藍色 (Blue)
-        "rgba(241, 196, 15, 1)",   // 黃色 (Yellow)
-        "rgba(155, 89, 182, 1)",   // 紫色 (Purple)
-        "rgba(243, 156, 18, 1)",   // 橙色 (Orange)
-    ]
+    // 產生 product-> 顏色 Map
+    const colorMap = buildColorMap(products)
+
+    // const predefinedColors = [
+    //     "rgba(231, 76, 60, 1)",    // 紅色 (Red)
+    //     "rgba(46, 204, 113, 1)",   // 綠色 (Green)
+    //     "rgba(52, 152, 219, 1)",   // 藍色 (Blue)
+    //     "rgba(241, 196, 15, 1)",   // 黃色 (Yellow)
+    //     "rgba(155, 89, 182, 1)",   // 紫色 (Purple)
+    //     "rgba(243, 156, 18, 1)",   // 橙色 (Orange)
+    // ]
 
     // 4) 建立 datasets 
     const datasets = products.flatMap((product, index) => {
-      const color = predefinedColors[index % predefinedColors.length];
+      const productColor = colorMap?.get(product) || "rgba(0,0,0,1)";//predefinedColors[index % predefinedColors.length];
       // =========================== Historical Dataset===========================
       const historicalDataset = {
         label: `${product} (Historical)`,
@@ -104,7 +108,7 @@ const ChartDisplay = ({ data, title, futureData = []}) => {
 
           return totalQuantity;
         }),
-        borderColor: color,
+        borderColor: productColor,
         spanGaps: true, // 啟用 gap 自動連接
         borderWidth: 2,
         fill: false //不填滿
@@ -124,7 +128,7 @@ const ChartDisplay = ({ data, title, futureData = []}) => {
               );
               return match ? parseFloat(match.quantity) : null;
             }),
-            borderColor: color,
+            borderColor: productColor,
             borderDash: [5, 5], //虛線模式
             spanGaps: true,
             borderWidth: 2,
@@ -159,7 +163,7 @@ const ChartDisplay = ({ data, title, futureData = []}) => {
         label: `${product} (Confidence Interval)`,
         data: upperBoundData,
         borderColor: 'rgba(0,0,0,0)', //不顯示線
-        backgroundColor: color.replace("1)", "0.2)"), //半透明背景
+        backgroundColor: productColor.replace("1)", "0.2)"), //半透明背景
         pointRadius: 0,
         borderWidth: 0,
         spanGaps: true,
@@ -189,18 +193,8 @@ const ChartDisplay = ({ data, title, futureData = []}) => {
       plugins: {
         legend: {
           display: true,
-          position: "top",
-          labels: {
-            filter: (legendItem) => {
-              const txt = legendItem.text || "";
-              // 只顯示 Historical / Prediction
-              if (txt.includes("Lower Bound") || txt.includes("Confidence Interval")) {
-                return false;
-              }
-              return true;
-            },
-          },
-        },
+          position: "top"
+        }
       },
       scales: {
         x: {
