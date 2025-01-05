@@ -1,13 +1,16 @@
-// src/containers/LeftChartContainer.jsx
+// src/containers/MonthChartContainer.jsx
 import React, { useEffect, useState } from "react";
 import FilterControls from "../components/FilterControls";
-import ChartDisplay from "../components/ChartDisplay";
-import { fetchLuboilData, fetchFuturePredictions } from "../services/api";
+import ChartDisplayMonth from "../components/ChartDisplayMonth";
+import {
+  fetchLuboilData,
+  fetchFutureMonthlyPredictions,
+} from "../services/api";
 import PropTypes from "prop-types";
 
-const ChartContainer = ({ includeFutureData = false }) => {
+const MonthChartContainer = ({ includeFutureData = false }) => {
   const [data, setData] = useState([]);
-  const [futureData, setFutureData] = useState([]);
+  const [futureMonthly, setFutureMonthly] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
 
   // 篩選條件
@@ -15,27 +18,22 @@ const ChartContainer = ({ includeFutureData = false }) => {
   const [selectedWarehouse, setSelectedWarehouse] = useState(["All"]);
 
   useEffect(() => {
-    // 抓取歷史數據
+    // 自己抓月資料 (或者抓同一 daily data? 依您設計)
     fetchLuboilData()
       .then(setData)
       .catch((err) => console.error("Fetch data error:", err));
 
-    // 根據 includeFutureData 決定是否抓取未來預測數據
-    if (includeFutureData) {
-      fetchFuturePredictions()
-        .then(setFutureData)
-        .catch((err) => console.error("Fetch future error:", err));
-    }
+    fetchFutureMonthlyPredictions()
+      .then(setFutureMonthly)
+      .catch((err) => console.error("Fetch future monthly error:", err));
   }, [includeFutureData]);
 
-  // 過濾數據
   useEffect(() => {
     const filtered = data.filter((item) => {
       const date = new Date(item.timestamp);
       const inDateRange =
         (!dateRange.start || date >= new Date(dateRange.start)) &&
         (!dateRange.end || date <= new Date(dateRange.end));
-
       const matchesWarehouse =
         selectedWarehouse.includes("All") ||
         selectedWarehouse.includes(item.location);
@@ -47,15 +45,15 @@ const ChartContainer = ({ includeFutureData = false }) => {
 
   // 檢查是否有 futureData
   const hasFutureData =
-    includeFutureData && futureData && futureData.length > 0;
+    includeFutureData && futureMonthly && futureMonthly.length > 0;
 
   return (
     <div>
       {hasFutureData ? (
-        <ChartDisplay
+        <ChartDisplayMonth
           data={data}
-          futureData={futureData}
-          title="Historical + Future Predictions Daily Data"
+          futureData={futureMonthly}
+          title="Historical + Future Predictions Monthly Data"
         />
       ) : (
         <div>
@@ -66,9 +64,9 @@ const ChartContainer = ({ includeFutureData = false }) => {
             setDateRange={setDateRange}
             setSelectedWarehouses={setSelectedWarehouse}
           />
-          <ChartDisplay
+          <ChartDisplayMonth
             data={filteredData}
-            title={"Filtered Historical Data"}
+            title="Monthly Filtered Historical Data"
           />
         </div>
       )}
@@ -76,12 +74,11 @@ const ChartContainer = ({ includeFutureData = false }) => {
   );
 };
 
-// 定義 propTypes 和 defaultProps
-ChartContainer.propTypes = {
+MonthChartContainer.propTypes = {
   includeFutureData: PropTypes.bool,
 };
-ChartContainer.defaultProps = {
+MonthChartContainer.defaultProps = {
   includeFutureData: false,
 };
 
-export default ChartContainer;
+export default MonthChartContainer;

@@ -1,29 +1,41 @@
 // App.jsx
 import React from "react";
 import ChartContainer from "./containers/ChartContainer";
-//import MonthChartContainer from "./containers/MonthChartContainer";
+import MonthChartContainer from "./containers/MonthChartContainer";
 
 function App() {
   return (
     <div className="container-fluid">
       <h1 className="text-center">Luboil Data Visualization</h1>
-
+      {/* 左右圖 (日) - 不含 futureData */}
       <div className="row">
-        {/* 左圖 (日) - 不含 futureData */}
         <div className="col-6">
           <ChartContainer includeFutureData={false} />
         </div>
-
-        {/* 右圖 (月) */}
         <div className="col-6">
           <ChartContainer includeFutureData={false} />
         </div>
       </div>
-
-      <div className="row mt-4">
-        {/* 左圖 (日) - 含 futureData */}
-        <div className="col-6">
+      {/* 下圖 (日) - 含 futureData */}
+      <div className="row mt-5">
+        <div className="col-12">
           <ChartContainer includeFutureData={true} />
+        </div>
+      </div>
+
+      {/* 左右圖 (月) - 不含 futureData */}
+      <div className="row">
+        <div className="col-6">
+          <MonthChartContainer includeFutureData={false} />
+        </div>
+        <div className="col-6">
+          <MonthChartContainer includeFutureData={false} />
+        </div>
+      </div>
+      {/* 下圖 (月) - 含 futureData */}
+      <div className="row mt-5">
+        <div className="col-12">
+          <MonthChartContainer includeFutureData={true} />
         </div>
       </div>
     </div>
@@ -31,8 +43,6 @@ function App() {
 }
 
 export default App;
-
-
 
 /// -----------------------------
 // import { useEffect, useState } from "react";
