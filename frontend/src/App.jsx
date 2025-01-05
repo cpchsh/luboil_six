@@ -3,11 +3,12 @@ import FilterControls from "./components/FilterControls";
 import ChartDisplay from "./components/ChartDisplay";
 import ChartDisplayMonth from "./components/ChartDisplayMonth";
 //import { fetchTemperatureData, fetchFuturePredictions } from "./services/api";
-import { fetchLuboilData, fetchFuturePredictions } from "./services/api";
+import { fetchLuboilData, fetchFuturePredictions, fetchFutureMonthlyPredictions } from "./services/api";
 
 const App = () => {
   const [data, setData] = useState([]);
   const [futureData, setFutureData] = useState([]); //預測數據
+  const [futureMonthly, setFutureMonthly] = useState([]) //按月預測數據
   // 2. 左圖的篩選條件 & 篩選後資料
   const [leftDateRange, setLeftDateRange] = useState({ start: "", end: "" });
   const [leftWarehouse, setLeftWarehouse] = useState(["All"]);
@@ -36,6 +37,14 @@ const App = () => {
   useEffect(() => {
     fetchFuturePredictions()
       .then((predictions) => setFutureData(predictions))
+      .catch((error) => {
+        setError(error.message);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetchFutureMonthlyPredictions()
+      .then((predictions) => setFutureMonthly(predictions))
       .catch((error) => {
         setError(error.message);
       });
@@ -152,6 +161,16 @@ const App = () => {
           <ChartDisplayMonth
             data={monthFilteredData}
             title="Monthly Historical Data"
+          />
+        </div>
+      </div>
+      <div className="row mt-5">
+        {/*左左下下邊： Historical + Predictions Monthly */}
+        <div className="col-6">
+          <ChartDisplayMonth
+            data={data}
+            futureData={futureMonthly}
+            title="Historical + Predictions Monthly(All Products)"
           />
         </div>
       </div>
