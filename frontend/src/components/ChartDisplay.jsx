@@ -189,18 +189,8 @@ const ChartDisplay = ({ data, title, futureData = []}) => {
       plugins: {
         legend: {
           display: true,
-          position: "top",
-          labels: {
-            filter: (legendItem) => {
-              const txt = legendItem.text || "";
-              // 只顯示 Historical / Prediction
-              if (txt.includes("Lower Bound") || txt.includes("Confidence Interval")) {
-                return false;
-              }
-              return true;
-            },
-          },
-        },
+          position: "top"
+        }
       },
       scales: {
         x: {

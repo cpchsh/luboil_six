@@ -53,7 +53,7 @@ const ChartContainer = ({ includeFutureData = false }) => {
         <ChartDisplay
           data={data}
           futureData={futureData}
-          title="Historical + Future Daily Data"
+          title="Historical + Future Predictions Daily Data"
         />
       ) : (
         <div>
