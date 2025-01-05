@@ -105,7 +105,7 @@ if __name__ == "__main__":
         ]
 
         # 4) 進行月預測，預測未來5個月
-        future_data = predict_quantity(product_data, periods=5, freq="MS")
+        future_data = predict_quantity_monthly(product_data, periods=5, freq="MS")
 
         # 幫預測結果加上 productName
         for row in future_data:
