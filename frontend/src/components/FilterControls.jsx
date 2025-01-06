@@ -2,16 +2,16 @@ import Select from "react-select";
 const FilterControls = ({
   data,
   dateRange,
-  selectedWarehouses,
+  selectedProducts,
   setDateRange,
-  setSelectedWarehouses,
+  setSelectedProducts,
 }) => {
-  // Generate warehouse options
-  const warehouseOptions = [
+  // Generate product options
+  const productOptions = [
     { value: "All", label: "All"},
-    ...[... new Set(data.map((item) => item.location))].map((warehouse) => ({
-      value: warehouse,
-      label: warehouse,
+    ...[... new Set(data.map((item) => item.location))].map((product) => ({
+      value: product,
+      label: product,
     })),
   ];
 
@@ -40,18 +40,18 @@ const FilterControls = ({
         />
       </label>
       <label>
-        Warehouse:
+        Product:
         <Select
           isMulti
-          value={selectedWarehouses.map((value) => ({
+          value={selectedProducts.map((value) => ({
             value,
             label: value,
           }))}
           onChange={(selectedOptions) => {
             const values = selectedOptions.map((option) => option.value);
-            setSelectedWarehouses(values.includes("All") ? ["All"] : values);
+            setSelectedProducts(values.includes("All") ? ["All"] : values);
           }}
-          options={warehouseOptions}
+          options={productOptions}
         />
       </label>
     </div>
