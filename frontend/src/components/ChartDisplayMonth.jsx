@@ -137,7 +137,7 @@ function prepareMonthlyData(data, futureData, title) {
   return { limitedData, limitedFuture };
 }
 
-const ChartDisplayMonth = ({ data = [], title = "", futureData = [] }) => {
+const ChartDisplayMonth = ({ data = [], title = "", futureData = [], colorMap }) => {
   if (!data.length) {
     return <p>No data available for {title}</p>;
   }
@@ -165,19 +165,10 @@ const ChartDisplayMonth = ({ data = [], title = "", futureData = [] }) => {
     ])
   );
 
-  // 顏色
-  const predefinedColors = [
-    "rgba(231, 76, 60, 1)",   // red
-    "rgba(46, 204, 113, 1)", // green
-    "rgba(52, 152, 219, 1)", // blue
-    "rgba(241, 196, 15, 1)", // yellow
-    "rgba(155, 89, 182, 1)", // purple
-    "rgba(243, 156, 18, 1)", // orange
-  ];
-
   // 建立 dataset
-  const datasets = products.flatMap((product, index) => {
-    const color = predefinedColors[index % predefinedColors.length];
+  const datasets = products.flatMap((product) => {
+    // 用 colorMap.get(product) 取得顏色
+    const productColor = colorMap?.get(product) || "rgba(0,0,0,1)";
 
     //[A] Historical Dataset
     const historicalDataset = {
@@ -189,7 +180,7 @@ const ChartDisplayMonth = ({ data = [], title = "", futureData = [] }) => {
         );
         return match ? match.quantity : null;
       }),
-      borderColor: color,
+      borderColor: productColor,
       spanGaps: true,
       borderWidth: 2,
       fill: false
@@ -226,7 +217,7 @@ const ChartDisplayMonth = ({ data = [], title = "", futureData = [] }) => {
       label: `${product} (Confidence Interval)`,
       data: upperBoundData,
       borderColor: 'rgba(0,0,0,0)',
-      backgroundColor: color.replace('1)', '0.2)'), //半透明填充
+      backgroundColor: productColor.replace('1)', '0.2)'), //半透明填充
       pointRadius: 0,
       borderWidth: 0,
       spanGaps: true,
@@ -243,7 +234,7 @@ const ChartDisplayMonth = ({ data = [], title = "", futureData = [] }) => {
         );
         return match ? match.quantity : null;
       }),
-      borderColor: color,
+      borderColor: productColor,
       borderDash: [5, 5],
       spanGaps: true,
       borderWidth: 2,

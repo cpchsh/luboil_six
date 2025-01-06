@@ -4,6 +4,7 @@ import FilterControls from "../components/FilterControls";
 import ChartDisplay from "../components/ChartDisplay";
 import { fetchLuboilData, fetchFuturePredictions } from "../services/api";
 import PropTypes from "prop-types";
+import { buildColorMap } from "../components/utils/colors";
 
 const ChartContainer = ({ includeFutureData = false }) => {
   const [data, setData] = useState([]);
@@ -48,16 +49,27 @@ const ChartContainer = ({ includeFutureData = false }) => {
   // 檢查是否有 futureData
   const hasFutureData =
     includeFutureData && futureData && futureData.length > 0;
+  
+  // 合併 data & futureData 的 productName，建立 colorMap
+  const allProducts = new Set([
+    ...data.map((d) => d.productName),
+    ...futureData.map((f) => f.productName),
+  ]);
+  const productList =Array.from(allProducts).sort();
+  const colorMap = buildColorMap(productList);
 
   return (
     <div>
       {hasFutureData ? (
+        // 有未來資料時
         <ChartDisplay
           data={data}
           futureData={futureData}
           title="Historical + Future Predictions Daily Data"
+          colorMap={colorMap} // 傳給 ChartDisplay
         />
       ) : (
+        // 無未來資料時
         <div>
           <FilterControls
             data={data}
@@ -69,6 +81,7 @@ const ChartContainer = ({ includeFutureData = false }) => {
           <ChartDisplay
             data={filteredData}
             title={"Filtered Historical Data"}
+            colorMap={colorMap} // 傳給 ChartDisplay
           />
         </div>
       )}
