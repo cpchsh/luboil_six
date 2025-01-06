@@ -40,7 +40,7 @@ const MonthChartContainer = ({ includeFutureData = false }) => {
         (!dateRange.end || date <= new Date(dateRange.end));
       const matchesWarehouse =
         selectedProduct.includes("All") ||
-        selectedProduct.includes(item.location);
+        selectedProduct.includes(item.productName);
 
       return inDateRange && matchesWarehouse;
     });
