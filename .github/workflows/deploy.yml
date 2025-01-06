@@ -5,6 +5,7 @@ on:
     branches:
       - main  # 每次推送到 main 分支時觸發
       - 'feature/*'
+      - 'bugfix/*'
 
 jobs:
   deploy:

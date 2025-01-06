@@ -11,7 +11,6 @@ import {
   Filler
 } from "chart.js";
 import moment from "moment";
-import { buildColorMap } from "./utils/colors";
 
 ChartJS.register(
   CategoryScale,
@@ -43,7 +42,7 @@ const filterByDays = (data, days) => {
 }
 
 
-const ChartDisplay = ({ data, title, futureData = []}) => {
+const ChartDisplay = ({ data, title, futureData = [], colorMap }) => {
     if (!data.length) {
       return <p>No data available for {title}</p>;
     }
@@ -75,9 +74,6 @@ const ChartDisplay = ({ data, title, futureData = []}) => {
       ])
     );
 
-    // 產生 product-> 顏色 Map
-    const colorMap = buildColorMap(products)
-
     // const predefinedColors = [
     //     "rgba(231, 76, 60, 1)",    // 紅色 (Red)
     //     "rgba(46, 204, 113, 1)",   // 綠色 (Green)
@@ -88,8 +84,11 @@ const ChartDisplay = ({ data, title, futureData = []}) => {
     // ]
 
     // 4) 建立 datasets 
-    const datasets = products.flatMap((product, index) => {
+    const datasets = products.flatMap((product) => {
+
+      // 用 colorMap.get(product) 取得顏色
       const productColor = colorMap?.get(product) || "rgba(0,0,0,1)";//predefinedColors[index % predefinedColors.length];
+      
       // =========================== Historical Dataset===========================
       const historicalDataset = {
         label: `${product} (Historical)`,
