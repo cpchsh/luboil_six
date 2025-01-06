@@ -16,7 +16,7 @@ const MonthChartContainer = ({ includeFutureData = false }) => {
 
   // 篩選條件
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
-  const [selectedWarehouse, setSelectedWarehouse] = useState(["All"]);
+  const [selectedProduct, setSelectedProduct] = useState(["All"]);
 
   useEffect(() => {
     // 自己抓月資料 (或者抓同一 daily data? 依您設計)
@@ -39,13 +39,13 @@ const MonthChartContainer = ({ includeFutureData = false }) => {
         (!dateRange.start || date >= new Date(dateRange.start)) &&
         (!dateRange.end || date <= new Date(dateRange.end));
       const matchesWarehouse =
-        selectedWarehouse.includes("All") ||
-        selectedWarehouse.includes(item.location);
+        selectedProduct.includes("All") ||
+        selectedProduct.includes(item.productName);
 
       return inDateRange && matchesWarehouse;
     });
     setFilteredData(filtered);
-  }, [data, dateRange, selectedWarehouse]);
+  }, [data, dateRange, selectedProduct]);
 
   // 檢查是否有 futureData
   const hasFutureData =
@@ -73,9 +73,9 @@ const MonthChartContainer = ({ includeFutureData = false }) => {
           <FilterControls
             data={data}
             dateRange={dateRange}
-            selectedWarehouses={selectedWarehouse}
+            selectedProducts={selectedProduct}
             setDateRange={setDateRange}
-            setSelectedWarehouses={setSelectedWarehouse}
+            setSelectedProducts={setSelectedProduct}
           />
           <ChartDisplayMonth
             data={filteredData}
