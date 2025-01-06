@@ -9,7 +9,7 @@ const FilterControls = ({
   // Generate product options
   const productOptions = [
     { value: "All", label: "All"},
-    ...[... new Set(data.map((item) => item.location))].map((product) => ({
+    ...[... new Set(data.map((item) => item.productName))].map((product) => ({
       value: product,
       label: product,
     })),
