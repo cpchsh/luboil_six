@@ -7,6 +7,7 @@ import {
   fetchFutureMonthlyPredictions,
 } from "../services/api";
 import PropTypes from "prop-types";
+import { buildColorMap } from "../components/utils/colors";
 
 const MonthChartContainer = ({ includeFutureData = false }) => {
   const [data, setData] = useState([]);
@@ -23,9 +24,12 @@ const MonthChartContainer = ({ includeFutureData = false }) => {
       .then(setData)
       .catch((err) => console.error("Fetch data error:", err));
 
-    fetchFutureMonthlyPredictions()
-      .then(setFutureMonthly)
-      .catch((err) => console.error("Fetch future monthly error:", err));
+    // 根據 includeFutureData 決定是否抓取未來預測數據
+    if (includeFutureData) {
+      fetchFutureMonthlyPredictions()
+        .then(setFutureMonthly)
+        .catch((err) => console.error("Fetch future monthly error:", err));
+    }
   }, [includeFutureData]);
 
   useEffect(() => {
@@ -47,6 +51,13 @@ const MonthChartContainer = ({ includeFutureData = false }) => {
   const hasFutureData =
     includeFutureData && futureMonthly && futureMonthly.length > 0;
 
+  const allProducts = new Set([
+    ...data.map((d) => d.productName),
+    ...futureMonthly.map((f) => f.productName)
+  ]);
+  const productList = Array.from(allProducts).sort();
+  const colorMap = buildColorMap(productList);
+
   return (
     <div>
       {hasFutureData ? (
@@ -54,8 +65,10 @@ const MonthChartContainer = ({ includeFutureData = false }) => {
           data={data}
           futureData={futureMonthly}
           title="Historical + Future Predictions Monthly Data"
+          colorMap={colorMap}
         />
       ) : (
+        //無未來資料時
         <div>
           <FilterControls
             data={data}
@@ -67,6 +80,7 @@ const MonthChartContainer = ({ includeFutureData = false }) => {
           <ChartDisplayMonth
             data={filteredData}
             title="Monthly Filtered Historical Data"
+            colorMap={colorMap}
           />
         </div>
       )}
