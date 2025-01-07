@@ -1,6 +1,7 @@
 // App.jsx
 import React, { useState } from "react";
 import ChartContainer from "./containers/ChartContainer";
+import SalesChartContainer from "./containers/SalesChartContainer";
 import MonthChartContainer from "./containers/MonthChartContainer";
 
 function App() {
@@ -49,6 +50,15 @@ function App() {
           <div className="row mt-5">
             <div className="col-12">
               <ChartContainer includeFutureData={true} />
+            </div>
+          </div>
+          {/* 左右圖 (日) - 不含 futureData */}
+          <div className="row">
+            <div className="col-6">
+              <SalesChartContainer includeFutureData={false} />
+            </div>
+            <div className="col-6">
+              <SalesChartContainer includeFutureData={false} />
             </div>
           </div>
         </div>
