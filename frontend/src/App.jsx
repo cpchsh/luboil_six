@@ -52,12 +52,9 @@ function App() {
               <ChartContainer includeFutureData={true} />
             </div>
           </div>
-          {/* 左右圖 (日) - 不含 futureData */}
+          {/* 下圖 - salesAmount*/}
           <div className="row">
-            <div className="col-6">
-              <SalesChartContainer includeFutureData={false} />
-            </div>
-            <div className="col-6">
+            <div className="col-12">
               <SalesChartContainer includeFutureData={false} />
             </div>
           </div>
