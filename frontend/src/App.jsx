@@ -48,12 +48,15 @@ function App() {
           </div>
           {/* 下圖 (日) - 含 futureData */}
           <div className="row mt-5">
-            <div className="col-12">
-              <ChartContainer includeFutureData={true} />
+            <div className="col-6">
+              <ChartContainer includeFutureData={true} seriesType = "R"/>
+            </div>
+            <div className="col-6">
+              <ChartContainer includeFutureData={true} seriesType = "AWS"/>
             </div>
           </div>
           {/* 下圖 - salesAmount*/}
-          <div className="row">
+          <div className="row mt-5">
             <div className="col-12">
               <SalesChartContainer includeFutureData={false} />
             </div>

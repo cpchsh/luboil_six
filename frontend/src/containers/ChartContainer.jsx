@@ -1,4 +1,3 @@
-// src/containers/LeftChartContainer.jsx
 import React, { useEffect, useState } from "react";
 import FilterControls from "../components/FilterControls";
 import ChartDisplay from "../components/ChartDisplay";
@@ -6,7 +5,13 @@ import { fetchLuboilData, fetchFuturePredictions } from "../services/api";
 import PropTypes from "prop-types";
 import { buildColorMap } from "../components/utils/colors";
 
-const ChartContainer = ({ includeFutureData = false }) => {
+
+/**
+ * ChartContainer - 可根據 seriesType 顯示不同系列(R/AWS/ALL)的潤滑油圖表
+ * @param {Boolean} includeFutureData - 若為true, 會抓取未來預測並ㄧ同顯示
+ * @param {String} seriesType         - "ALL", "R", "AWS" 用以篩選特定產品系列
+ */
+const ChartContainer = ({ includeFutureData = false, seriesType = "ALL" }) => {
   const [data, setData] = useState([]);
   const [futureData, setFutureData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -18,16 +23,43 @@ const ChartContainer = ({ includeFutureData = false }) => {
   useEffect(() => {
     // 抓取歷史數據
     fetchLuboilData()
-      .then(setData)
+      .then((allData) => {
+        // 若 seriesType = "R", 只保留 R32, R46, R68
+        // 若 seriesType = "AWS", 只保留 32AWS, 46AWS, 68AWS
+        // 否則全部保留
+        let filtered = allData;
+        if (seriesType === "R") {
+          filtered = allData.filter((item) => 
+          ["R32", "R46", "R68"].includes(item.productName)
+          );
+        } else if (seriesType === "AWS") {
+          filtered = allData.filter((item) =>
+            ["32AWS", "46AWS", "68AWS"].includes(item.productName)
+          );
+        }
+        setData(filtered);
+      })
       .catch((err) => console.error("Fetch data error:", err));
 
     // 根據 includeFutureData 決定是否抓取未來預測數據
     if (includeFutureData) {
       fetchFuturePredictions()
-        .then(setFutureData)
-        .catch((err) => console.error("Fetch future error:", err));
+        .then((allFuture) => {
+          let futFiltered = allFuture;
+          if (seriesType === "R") {
+            futFiltered = allFuture.filter((item) =>
+             ["R32", "R46", "R68"].includes(item.productName)
+            );
+          } else if (seriesType === "AWS") {
+            futFiltered = allFuture.filter((item) =>
+              ["32AWS", "46AWS", "68AWS"].includes(item.productName)
+            );
+          }
+          setFutureData(futFiltered);
+        })
+        .catch((err) => console.error("Fetch future error:", err))
     }
-  }, [includeFutureData]);
+  }, [includeFutureData, seriesType]);
 
   // 過濾數據
   useEffect(() => {
@@ -37,6 +69,7 @@ const ChartContainer = ({ includeFutureData = false }) => {
         (!dateRange.start || date >= new Date(dateRange.start)) &&
         (!dateRange.end || date <= new Date(dateRange.end));
 
+      // 若下拉選 "ALL"，表示不進行 productName 過濾
       const matchesWarehouse =
         selectedProduct.includes("All") ||
         selectedProduct.includes(item.productName);
@@ -65,7 +98,13 @@ const ChartContainer = ({ includeFutureData = false }) => {
         <ChartDisplay
           data={data}
           futureData={futureData}
-          title="Historical + Future Predictions Daily Data"
+          title={
+            seriesType === "R"
+              ? "Historical + Future Predictions (R Series)"
+              : seriesType === "AWS"
+              ? "Historical + Future Predictions (AWS Series)"
+              : "Historical + Future Predictions (All Products)"
+          }
           colorMap={colorMap} // 傳給 ChartDisplay
         />
       ) : (
@@ -80,7 +119,13 @@ const ChartContainer = ({ includeFutureData = false }) => {
           />
           <ChartDisplay
             data={filteredData}
-            title={"Filtered Historical Data"}
+            title={
+              seriesType === "R"
+                ? "R Series Historical Data"
+                : seriesType === "AWS"
+                ? "AWS Series Historical Data"
+                : "Filtered Historical Data(All Products)"
+            }
             colorMap={colorMap} // 傳給 ChartDisplay
           />
         </div>
@@ -92,9 +137,11 @@ const ChartContainer = ({ includeFutureData = false }) => {
 // 定義 propTypes 和 defaultProps
 ChartContainer.propTypes = {
   includeFutureData: PropTypes.bool,
+  seriesType: PropTypes.oneOf(["ALL", "R", "AWS"])
 };
 ChartContainer.defaultProps = {
   includeFutureData: false,
+  seriesType: "ALL",
 };
 
 export default ChartContainer;
