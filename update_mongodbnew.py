@@ -43,7 +43,7 @@ try:
     logging.info("Connected to Database")
 
     # 打開 JSON 文件並讀取數據（假設檔名為 output.json）
-    json_file_path = "sixoildata.json"
+    json_file_path = "sixoildata202301_202409.json"
     with open(json_file_path, "r", encoding="utf-8") as file:
         data = json.load(file)
 
