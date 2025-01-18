@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import ChartContainer from "./containers/ChartContainer";
 import SalesChartContainer from "./containers/SalesChartContainer";
 import MonthChartContainer from "./containers/MonthChartContainer";
+import LatestDate from "./components/LatestDate";
 
 function App() {
   const [activeTab, setActiveTab] = useState("daily");
@@ -14,6 +15,7 @@ function App() {
   return (
     <div className="container-fluid">
       <h1 className="text-center">Luboil Data Visualization</h1>
+      <LatestDate/>
       {/* Bootstrap NavTabs */}
       <ul className="nav nav-tabs">
         <li className="nav-item">

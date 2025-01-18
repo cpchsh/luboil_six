@@ -10,3 +10,4 @@ temperature_data.json
 oilcsvtojson.py
 *.csv
 *.json
+*.pkl
