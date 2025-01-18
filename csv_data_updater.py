@@ -4,7 +4,7 @@ import csv
 from datetime import datetime
 from pymongo import MongoClient
 
-MONGODB_URI = os.getenv("MONGO_URI")
+MONGODB_URI = os.getenv("MONGODB_URI")
 if not MONGODB_URI:
     raise ValueError("No MONGODB_URI in environment variables")
 
