@@ -62,8 +62,8 @@ services:
     depends_on:
       - mongo
     volumes:
-      -./:/app
-      -./updatedData:/app/updatedData
+      - ./:/app
+      - ./updatedData:/app/updatedData
     working_dir: /app 
     command: >
       bash -c "
