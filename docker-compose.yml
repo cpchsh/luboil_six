@@ -33,45 +33,40 @@ services:
       - mongo_data:/data/db # 將/data/db指向名為 'mongo_data'的volumns
 
   
-  # #一次性容器，用來執行搬移全部資料的update_mongodb.py
-  # data_inserter:
-  #   image: python:3.9
-  #   #container_name: data_inserter
-  #   depends_on:
-  #     - mongo
-  #   volumes:
-  #     # 將本機當前資料夾(包含 update_mongodb.py)掛載到容器的 /app
-  #     - ./:/app
-  #   working_dir: /app 
-  #   # command: 先安裝 pymongo，再執行 updae_mongodb.py
-  #   command: >
-  #     bash -c "
-  #       pip install pymongo &&
-  #       python update_mongodbnew.py
-  #     "
-    
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-  #     MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-  #     MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-  #     MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
-  
-  # 合併 csv_data_inserter + predictor 
-  data_ingest_and_predict:
+  #一次性容器，用來執行搬移全部資料的update_mongodb.py
+  data_inserter:
     image: python:3.9
+    #container_name: data_inserter
     depends_on:
       - mongo
     volumes:
-      # 將當前資料夾以及 updatedData/ 掛載
+      # 將本機當前資料夾(包含 update_mongodb.py)掛載到容器的 /app
       - ./:/app
-      - ./updatedData:/app/updatedData
+    working_dir: /app 
+    # command: 先安裝 pymongo，再執行 updae_mongodb.py
+    command: >
+      bash -c "
+        pip install pymongo &&
+        python update_mongodbnew.py
+      "
+    
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+      MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
+  # 執行predict_future_quantity.py
+  predictor:
+    image: python:3.9
+    #container_name: predictor
+    depends_on:
+      - mongo
+    volumes:
+      - ./:/app
     working_dir: /app
     command: >
       bash -c "
-        pip install --no-cache-dir pymongo pandas prophet &&
-        echo '>>> RUN CSV ingestion...' &&
-        python csv_data_updater.py &&
-        echo '>>> RUN future quantity predictions...' &&
+        pip install --no-cache-dir pymongo prophet &&
         python predict_future_quantity.py &&
         python predict_future_quantityMonthly.py
       "
@@ -80,20 +75,24 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
       MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
-    
-  
-  # # 執行predict_future_quantity.py
-  # predictor:
+
+
+  # # 合併 csv_data_inserter + predictor 
+  # data_ingest_and_predict:
   #   image: python:3.9
-  #   #container_name: predictor
   #   depends_on:
   #     - mongo
   #   volumes:
+  #     # 將當前資料夾以及 updatedData/ 掛載
   #     - ./:/app
+  #     - ./updatedData:/app/updatedData
   #   working_dir: /app
   #   command: >
   #     bash -c "
-  #       pip install --no-cache-dir pymongo prophet &&
+  #       pip install --no-cache-dir pymongo pandas prophet &&
+  #       echo '>>> RUN CSV ingestion...' &&
+  #       python csv_data_updater.py &&
+  #       echo '>>> RUN future quantity predictions...' &&
   #       python predict_future_quantity.py &&
   #       python predict_future_quantityMonthly.py
   #     "
@@ -102,6 +101,9 @@ services:
   #     MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
   #     MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
   #     MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
+    
+  
+
 
 volumes:
   mongo_data:
