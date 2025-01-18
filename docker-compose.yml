@@ -73,7 +73,7 @@ services:
         python csv_data_updater.py &&
         echo '>>> RUN future quantity predictions...' &&
         python predict_future_quantity.py &&
-        python predit_future_quantityMonthly.py
+        python predict_future_quantityMonthly.py
       "
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
