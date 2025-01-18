@@ -67,7 +67,7 @@ services:
     working_dir: /app 
     command: >
       bash -c "
-        pip install -no-cache-dir pymongo pandas &&
+        pip install --no-cache-dir pymongo pandas &&
         python csv_data_updater.py
       "
     environment:
