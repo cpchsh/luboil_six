@@ -5,39 +5,30 @@ import uuid
 from datetime import datetime
 from pymongo import MongoClient
 
-# 讀取環境變數
 MONGODB_URI = os.getenv("MONGODB_URI")
 if not MONGODB_URI:
     raise ValueError("No MONGODB_URI in environment variables")
 
-# 建立連線
 client = MongoClient(MONGODB_URI)
 db = client["luboil_data_db"]
 
 def parse_date_str(date_str):
     """
-    將 date_str 轉成 offset-aware 的 datetime (UTC)
-    若含 'Z' 則替換成 +00:00
-    若是 yyyy-mm-dd (無Z)，也強制視為 UTC
+    轉成 offset-aware datetime (UTC)
     """
     date_str = date_str.strip()
     if date_str.endswith("Z"):
-        # ex: "2024-01-03T00:00:00Z" -> "2024-01-03T00:00:00+00:00"
         date_str = date_str[:-1] + "+00:00"
     else:
-        # 若沒帶 Z or 時區，假設為 UTC
         if "T" in date_str:
             if "+" not in date_str and "-" not in date_str[10:]:
                 date_str += "+00:00"
         else:
             date_str += "T00:00:00+00:00"
-
     return datetime.fromisoformat(date_str)  # offset-aware
 
 def main():
     print("=== [csv_data_updater.py] START ===")
-
-    # 找 updatedData/ 下所有 .csv 檔
     csv_files = glob.glob("updatedData/*.csv")
     if not csv_files:
         print("No CSV found in updatedData folder, skip insertion.")
@@ -50,6 +41,7 @@ def main():
         print(f"\nProcessing {csv_file} ...")
         with open(csv_file, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
+
             for row in reader:
                 productName = row.get("productName")
                 timestamp_str = row.get("timestamp")
@@ -59,16 +51,34 @@ def main():
 
                 # 1) parse CSV timestamp
                 try:
-                    csv_ts = parse_date_str(timestamp_str)
+                    csv_ts = parse_date_str(timestamp_str)  # offset-aware
                 except ValueError:
                     skip_count += 1
                     continue
 
-                # 2) 動態生成 一個唯一標識 (UUID)
-                #    代表該行CSV交易的 "行ID" / "transID"。
+                # 2) 先檢查 DB 中對應 productName 的最大日期
+                latest_rec = db.luboil_data.find_one(
+                    {"productName": productName},
+                    sort=[("timestamp", -1)],  # 取得 timestamp 最大的
+                    projection={"timestamp": 1}
+                )
+                if latest_rec:
+                    db_ts_str = latest_rec["timestamp"].replace("Z", "+00:00")
+                    db_max_ts = datetime.fromisoformat(db_ts_str)  # offset-aware
+                else:
+                    # DB 裡沒這個 productName
+                    db_max_ts = datetime.fromisoformat("1900-01-01T00:00:00+00:00")
+
+                # 若 csv_ts 不大於 db_max_ts -> skip
+                # (表示該日期以前的已在 DB)
+                if csv_ts <= db_max_ts:
+                    skip_count += 1
+                    continue
+
+                # 3) 動態生成 _importUUID => 保證同一 CSV 同 timestamp 也能區分是不同交易
                 row_uuid = str(uuid.uuid4())
 
-                # 3) 準備插入 doc
+                # 4) 組裝 doc
                 cardCode = row.get("cardCode")
                 processYm = row.get("processYm")
                 quantity = row.get("quantity")
@@ -79,9 +89,9 @@ def main():
                 custPlace = row.get("custPlace")
 
                 doc = {
-                    "_importUUID": row_uuid,  # 用uuid作為唯一標識
+                    "_importUUID": row_uuid,
                     "productName": productName,
-                    "timestamp": csv_ts.isoformat().replace("+00:00", "Z"),
+                    "timestamp": csv_ts.isoformat().replace("+00:00","Z"),
                     "quantity": float(quantity) if quantity else 0.0,
                     "cardCode": cardCode,
                     "processYm": processYm,
@@ -92,18 +102,15 @@ def main():
                     "custPlace": custPlace
                 }
 
-                # 4) upsert: 以 "_importUUID" 為 key => 不會重複插入
-                #    但多次執行同一檔, 也不會插入重複
+                # 5) upsert => 以 _importUUID 為 key => 不重複插入同CSV行
                 result = db.luboil_data.update_one(
                     {"_importUUID": row_uuid},
                     {"$setOnInsert": doc},
                     upsert=True
                 )
                 if result.upserted_id:
-                    # 代表是新的插入
                     inserted_count += 1
                 else:
-                    # matched -> skip
                     skip_count += 1
 
         print(f"Done {csv_file}, inserted so far: {inserted_count}, skipped={skip_count}")
