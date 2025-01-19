@@ -90,6 +90,20 @@ app.get("/api/luboil_data_latest", async (req, res) => {
   }
 })
 
+// 獲取feature
+app.get('/api/feature_data', async (req, res) => {
+  console.log("Received request for /api/feature_data");
+
+  try {
+    const featureData = await db.collection('feature_data').find({}).toArray();
+    console.log("Data fetched from 'feature_data':", featureData);
+    res.json(featureData);
+  } catch (error) {
+    console.error("Error fetching data from 'feature_data':", error);
+    res.status(500).json({ error: "Failed to fetch data from 'feature_data'" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

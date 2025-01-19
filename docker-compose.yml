@@ -89,9 +89,11 @@ services:
     working_dir: /app
     command: >
       bash -c "
-        pip install --no-cache-dir pymongo pandas prophet &&
+        pip install --no-cache-dir pymongo pandas prophet scikit-learn joblib &&
         echo '>>> RUN CSV ingestion...' &&
         python csv_data_updater.py &&
+        echo '>>> RUN update_and_retrain.py...' &&
+        python update_and_retrain.py &&
         echo '>>> RUN future quantity predictions...' &&
         python predict_future_quantity.py &&
         python predict_future_quantityMonthly.py
