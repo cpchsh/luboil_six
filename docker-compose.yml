@@ -93,7 +93,7 @@ services:
         echo '>>> RUN CSV ingestion...' &&
         python csv_data_updater.py &&
         echo '>>> RUN update_and_retrain.py...' &&
-        python update_and_retrain.py &&
+        python update_and_retrain_all.py &&
         echo '>>> RUN future quantity predictions...' &&
         python predict_future_quantity.py &&
         python predict_future_quantityMonthly.py
