@@ -118,13 +118,18 @@ function FeatureBarChart({ productName, features }) {
     indexAxis: "y", // 橫向
     responsive: true,
     scales: {
-      x: { min: 0, title: {display: true, text: "Importance" }},
-      y: { title: { display: true, text: "Feature" }},
+      x: { min: 0, title: {display: true, text: "Importance", font: { size: 14 } }},
+      y: { title: { display: true, text: "Feature", font: { size: 14 } }},
     },
     plugins: {
       title: {
         display: true,
         text: productName + " Feature Importance",
+        font: {
+          size: 18,
+          weight: "bold",
+          family: "Arial"
+        }
       },
       legend: {
         display: false
