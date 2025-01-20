@@ -27,13 +27,6 @@ const FeatureChartsDisplay = () => {
   // 1) 向後端 /api/feature_data 取得特徵重要度
   useEffect(() => {
     fetchFeatures()
-      .then((res) => {
-        console.log("res",res);
-        if (!res.ok) {
-          throw new Error("Failed to fetch feature_data")
-        }
-        return res.json();
-      })
       .then((data) => {
         setFeatureData(data);
       })
