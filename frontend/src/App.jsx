@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import ChartContainer from "./containers/ChartContainer";
 import SalesChartContainer from "./containers/SalesChartContainer";
 import MonthChartContainer from "./containers/MonthChartContainer";
+import FeatureChartsDisplay from "./components/FeatureChartsDisplay";
 import LatestDate from "./components/LatestDate";
 
 function App() {
@@ -32,6 +33,15 @@ function App() {
             onClick={() => handleTabChange("monthly")}
           >
             月資料(Monthly)
+          </button>
+        </li>
+        {/* 新增 Feature tab */}
+        <li className="nav-item">
+          <button
+            className={`nav-link ${activeTab === "features" ? "active" : ""}`}
+            onClick={() => handleTabChange("features")}
+          >
+            特徵重要度(Features)
           </button>
         </li>
       </ul>
@@ -83,6 +93,12 @@ function App() {
               <MonthChartContainer includeFutureData={true} />
             </div>
           </div>
+        </div>
+      )}
+      {/*新增的feature tab */}
+      {activeTab === "features" && (
+        <div className="mt-3">
+          <FeatureChartsDisplay />
         </div>
       )}
     </div>
