@@ -71,6 +71,39 @@ app.get('/api/future_luboil_monthly', async (req, res) => {
   }
 });
 
+// 獲取最新的日期
+app.get("/api/luboil_data_latest", async (req, res) => {
+  console.log("Received request for /api/luboil_data_latest");
+  try {
+    const latestDoc = await db.collection('luboil_data').findOne(
+      {},
+      { sort: { timestamp: -1 }, projection: {timestamp: 1 } }
+    );
+    if (!latestDoc) {
+      return res.json({ maxTimestamp: null });
+    }
+    // ex: "2024-11-30T00:00:00Z"
+    res.json({ maxTimestamp: latestDoc.timestamp });
+  } catch (error) {
+    console.log("Error fetching max timestamp:", error);
+    res.status(500).json({ error: "Failed to fetch max timestamp" });
+  }
+})
+
+// 獲取feature
+app.get('/api/feature_data', async (req, res) => {
+  console.log("Received request for /api/feature_data");
+
+  try {
+    const featureData = await db.collection('feature_data').find({}).toArray();
+    console.log("Data fetched from 'feature_data':", featureData);
+    res.json(featureData);
+  } catch (error) {
+    console.error("Error fetching data from 'feature_data':", error);
+    res.status(500).json({ error: "Failed to fetch data from 'feature_data'" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
