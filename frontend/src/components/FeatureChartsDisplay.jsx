@@ -28,6 +28,7 @@ const FeatureChartsDisplay = () => {
   useEffect(() => {
     fetchFeatures()
       .then((res) => {
+        console.log("res",res);
         if (!res.ok) {
           throw new Error("Failed to fetch feature_data")
         }
