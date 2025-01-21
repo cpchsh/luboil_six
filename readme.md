@@ -9,3 +9,5 @@ test2
 test3
 # 0120
 test
+# 0121
+reset
