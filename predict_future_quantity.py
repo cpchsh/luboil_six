@@ -77,9 +77,9 @@ def insert_future_predictions_to_mongodb(predictions):
     db = client["luboil_data_db"]
     collection = db["future_quantity_data"]
 
-    # # 刪除舊數據
-    # collection.delete_many({})
-    # print("Old future data deleted")
+    # 刪除舊數據
+    collection.delete_many({})
+    print("Old future data deleted")
 
     # 插入新數據
     collection.insert_many(predictions)

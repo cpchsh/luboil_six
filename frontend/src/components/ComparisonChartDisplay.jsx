@@ -101,8 +101,10 @@ const ComparisonChartDisplay = ({
   const pastLine = {
     label: "過去的交易數量",
     data: uniqueTimestamps.map((t) => {
-      const match = limitedData.find((d) => d.timestamp === t);
-      return match ? parseFloat(match.quantity) : null;
+      const matches = limitedData.filter((d) => d.timestamp === t);
+      if (!matches.length) return null;
+      const sumQty = matches.reduce((acc, item) => acc + parseFloat(item.quantity || 0), 0);
+      return sumQty;
     }),
     borderColor: "rgba(255, 0, 0, 1)", //red
     borderWidth: 2,
@@ -113,15 +115,8 @@ const ComparisonChartDisplay = ({
   const predLine = {
     label: "預測的交易數量",
     data: uniqueTimestamps.map((t) => {
-      const matches = limitedPred.find((d) => d.timestamp === t);
-      return matches
-        ? parseFloat(
-            matches.reduce((acc, item) => {
-              const qty = item.quantity;
-              return acc + qty;
-            }, 0)
-          )
-        : null;
+      const match = limitedPred.find((d) => d.timestamp === t);
+      return match ? parseFloat(match.quantity): null
     }),
     borderColor: "rgba(0, 0, 255, 1)", // blue
     borderDash: [5, 5], //虛線
