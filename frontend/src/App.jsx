@@ -5,6 +5,7 @@ import SalesChartContainer from "./containers/SalesChartContainer";
 import MonthChartContainer from "./containers/MonthChartContainer";
 import FeatureChartsDisplay from "./components/FeatureChartsDisplay";
 import LatestDate from "./components/LatestDate";
+import ComparisonChartContainer from "./containers/ComparisonChartContainer";
 
 function App() {
   const [activeTab, setActiveTab] = useState("daily");
@@ -67,6 +68,8 @@ function App() {
               <ChartContainer includeFutureData={true} seriesType = "AWS"/>
             </div>
           </div>
+          {/* 驗證預測 */}
+          <ComparisonChartContainer/>
           {/* 下圖 - salesAmount*/}
           <div className="row mt-5">
             <div className="col-12">

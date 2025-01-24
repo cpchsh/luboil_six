@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ComparisonChartDisplay from "../components/ComparisonChartDisplay";
 import { fetchLuboilData, fetchFuturePredictions } from "../services/api";
-import PropTypes from "prop-types";
 
-
-/**
- * ChartContainer - 可根據 seriesType 顯示不同系列(R/AWS/ALL)的潤滑油圖表
- * @param {Boolean} includeFutureData - 若為true, 會抓取未來預測並ㄧ同顯示
- * @param {String} seriesType         - "ALL", "R", "AWS" 用以篩選特定產品系列
- */
 const ComparisonChartContainer = () => {
   const [data, setData] = useState([]);
   const [futureData, setFutureData] = useState([]);
@@ -89,14 +82,5 @@ const ComparisonChartContainer = () => {
   );
 };
 
-// 定義 propTypes 和 defaultProps
-ChartContainer.propTypes = {
-  includeFutureData: PropTypes.bool,
-  seriesType: PropTypes.oneOf(["ALL", "R", "AWS"])
-};
-ChartContainer.defaultProps = {
-  includeFutureData: false,
-  seriesType: "ALL",
-};
 
 export default ComparisonChartContainer;
