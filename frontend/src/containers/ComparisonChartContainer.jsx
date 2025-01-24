@@ -69,7 +69,7 @@ const ComparisonChartContainer = () => {
                 />
             </div>
             <div className="col-4 mt-5">
-                <ComparisonChartContainer
+                <ComparisonChartDisplay
                   title="比較：68AWS"
                   data={data.filter(d => d.productName === "68AWS")}
                   predictedData={futureData.filter(d => d.productName === "68AWS")}
