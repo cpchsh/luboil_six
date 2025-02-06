@@ -58,7 +58,7 @@ const ChartDisplay = ({ data, title, futureData = [], colorMap }) => {
 
     // 2) 找到歷史資料「最後一天」（若沒有歷史資料，就直接跳過）
     const sortedData = [...limitedData].sort(
-      (a, b) => new Date(a.timestamp) - new(b.timestamp)
+      (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
     );
     const lastHistTimestamp = sortedData.length
       ? new Date(sortedData[sortedData.length -1].timestamp)
