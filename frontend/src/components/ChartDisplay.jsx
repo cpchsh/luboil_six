@@ -64,11 +64,16 @@ const ChartDisplay = ({ data, title, futureData = [], colorMap }) => {
       ? new Date(sortedData[sortedData.length -1].timestamp)
       : null;
 
-    // 3) 如果有未來資料，過濾出 timestamp > LastHistTimestamp
+    // 3) 將預測資料的時間強制從「歷史最後一天+1」開始
+    //    這樣就不會跟最後一天重疊
     let filteredFuture = [];
     if (futureData.length && lastHistTimestamp) {
+      const nextDayOfLastHist = new Date(
+        lastHistTimestamp.getTime() + 24 * 60 * 60 * 1000
+      );
+      // 只保留 timestamp >= nextDayOfLastHist
       filteredFuture = futureData.filter(
-        (item) => new Date(item.timestamp) > lastHistTimestamp
+        (item) => new Date(item.timestamp) >= nextDayOfLastHist
       );
     }
     // 將歷史及未來的timestamp全部收集起來
