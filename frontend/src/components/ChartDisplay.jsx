@@ -49,17 +49,32 @@ const ChartDisplay = ({ data, title, futureData = [], colorMap }) => {
 
     // 依title 判斷要顯示幾天
     // - 若 title 含 "Predictions" => 只顯示近15天
-    // - 否則 => 近30天
+    // - 否則 => 近90天
     const daysToShow = title.includes("Predictions") ? 15: 90;
 
     // 1) 過濾「最近N天」歷史資料
     const limitedData = filterByDays(data, daysToShow);
     
 
+    // 2) 找到歷史資料「最後一天」（若沒有歷史資料，就直接跳過）
+    const sortedData = [...limitedData].sort(
+      (a, b) => new Date(a.timestamp) - new(b.timestamp)
+    );
+    const lastHistTimestamp = sortedData.length
+      ? new Date(sortedData[sortedData.length -1].timestamp)
+      : null;
+
+    // 3) 如果有未來資料，過濾出 timestamp > LastHistTimestamp
+    let filteredFuture = [];
+    if (futureData.length && lastHistTimestamp) {
+      filteredFuture = futureData.filter(
+        (item) => new Date(item.timestamp) > lastHistTimestamp
+      );
+    }
     // 將歷史及未來的timestamp全部收集起來
     const allTimestamps = [
-      ...limitedData.map((item) => item.timestamp),
-      ...(futureData ? futureData.map((item) => item.timestamp) : [])
+      ...limitedData.map((d) => d.timestamp),
+      ...filteredFuture.map((d) => d.timestamp),
     ]
 
     const timestamps = Array.from(new Set(allTimestamps)).sort(
