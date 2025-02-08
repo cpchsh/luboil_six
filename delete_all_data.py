@@ -10,14 +10,14 @@ mongodb_uri = os.getenv("MONGODB_URI")
 client = MongoClient(mongodb_uri)
 
 try:
-    db = client["sensor_data_db"]
-    collection = db["temperature_data"]
+    db = client["luboil_data_db"]
+    collection = db["luboil_data"]
     logging.info("Connected to Database")
 
     # 刪除所有資料
     result = collection.delete_many({})
-    logging.info(f"Deleted {result.deleted_count} documents from 'temperature_data'")
-    print(f"Deleted {result.deleted_count} documents from 'temperature_data'")
+    logging.info(f"Deleted {result.deleted_count} documents from 'luboil_data'")
+    print(f"Deleted {result.deleted_count} documents from 'luboil_data'")
 
 except Exception as e:
     logging.critical("Failed to delete data: %s", e)

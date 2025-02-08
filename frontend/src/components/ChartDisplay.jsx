@@ -90,7 +90,7 @@ const ChartDisplay = ({ data, title, futureData = [], colorMap }) => {
     const products = Array.from(
       new Set([
         ...limitedData.map((item) => item.productName),
-        ...(futureData ? futureData.map((item) => item.productName) : []),
+        ...filteredFuture.map((item) => item.productName),
       ])
     );
 
@@ -142,7 +142,7 @@ const ChartDisplay = ({ data, title, futureData = [], colorMap }) => {
       const predictionDataset = {
             label: `${product} (Prediction)`,
             data: timestamps.map((timestamp) => {
-              const match = futureData.find(
+              const match = filteredFuture.find(
                 (item) => item.productName === product && item.timestamp === timestamp
               );
               return match ? parseFloat(match.quantity) : null;
@@ -155,7 +155,7 @@ const ChartDisplay = ({ data, title, futureData = [], colorMap }) => {
           }
       // 下界 (Lower Bound)
       const lowerBoundData =  timestamps.map((timestamp) =>{
-        const lbMatch = futureData.find(
+        const lbMatch = filteredFuture.find(
           (item) => item.productName === product && item.timestamp === timestamp 
         )?.lower_bound;
         return lbMatch !== undefined ? parseFloat(lbMatch) : null;
@@ -172,7 +172,7 @@ const ChartDisplay = ({ data, title, futureData = [], colorMap }) => {
 
       // 上界 (Upper Bound) - 將fill指向前一個資料集(即 lowerBoundDataset)
       const upperBoundData = timestamps.map((timestamp) => {
-        const ubMatch = futureData.find(
+        const ubMatch = filteredFuture.find(
           (item) => item.productName === product && item.timestamp === timestamp 
         )?.upper_bound;
         return ubMatch !== undefined ? parseFloat(ubMatch) : null;

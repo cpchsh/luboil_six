@@ -78,12 +78,29 @@ def insert_future_predictions_to_mongodb(predictions):
     collection = db["future_quantity_data"]
 
     # 刪除舊數據
-    # collection.delete_many({})
-    # print("Old future data deleted")
+    collection.delete_many({})
+    print("Old future data deleted")
 
-    # 插入新數據
-    collection.insert_many(predictions)
-    print("New future quantity data inserted.")
+    # 插入或更新數據
+    inserted_count = 0
+    updated_count = 0
+    for doc in predictions:
+        # 以productName + timestamp 當成查詢條件
+        query = {
+            "productName": doc["productName"],
+            "timestamp": doc["timestamp"]
+        }
+        # 使用 upsert=True, 若沒找到就插入，找到就更新
+        result = collection.update_one(query, {"$set": doc}, upsert = True)
+
+        # 依照回傳的 result 判斷是插入或更新
+        if result.upserted_id:
+            inserted_count += 1
+        else:
+            # 若matched_count 大於0 表示是更新
+            if result.matched_count > 0:
+                updated_count += 1
+    print(f"Upsert finish. Inserted: {inserted_count}, Updated: {updated_count}")
 
 if __name__ == "__main__":
     # 從 MongoDB獲取數據
