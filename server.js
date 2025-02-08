@@ -8,8 +8,8 @@ const port = process.env.PORT || 3000;
 
 // 設置 CORS，允許從前端訪問
 app.use(cors({
-  //origin: `https://${process.env.PUBLICIP}` // 替換為你的前端 IP
-  origin: 'http://localhost:3001'
+  origin: `http://10.168.230.33:3001` //origin: `https://${process.env.PUBLICIP}` // 替換為你的前端 IP
+  //origin: 'http://localhost:3001'
 }));
 
 let db;

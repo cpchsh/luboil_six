@@ -1,4 +1,10 @@
-2025-02-08 01:34:28,036 INFO: Connected to Database
-2025-02-08 01:34:28,093 INFO: Deleted 6624 documents from 'luboil_data'
-2025-02-08 01:53:12,247 INFO: Connected to Database
-2025-02-08 01:53:12,296 INFO: Deleted 6624 documents from 'luboil_data'
+2025-02-08 05:53:58,715 INFO: Connected to Database
+2025-02-08 05:53:58,722 CRITICAL: Failed to delete data: Authentication failed., full error: {'ok': 0.0, 'errmsg': 'Authentication failed.', 'code': 18, 'codeName': 'AuthenticationFailed'}
+2025-02-08 06:42:51,325 INFO: Connected to Database
+2025-02-08 06:42:51,331 CRITICAL: Failed to delete data: Authentication failed., full error: {'ok': 0.0, 'errmsg': 'Authentication failed.', 'code': 18, 'codeName': 'AuthenticationFailed'}
+2025-02-08 06:48:34,201 INFO: Connected to Database
+2025-02-08 06:48:34,219 INFO: Deleted 0 documents from 'luboil_data'
+2025-02-08 07:16:09,390 INFO: Connected to Database
+2025-02-08 07:16:09,435 INFO: Deleted 6569 documents from 'luboil_data'
+2025-02-08 07:33:35,467 INFO: Connected to Database
+2025-02-08 07:33:35,516 INFO: Deleted 6569 documents from 'luboil_data'

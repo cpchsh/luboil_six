@@ -4,7 +4,7 @@ logs/
 luboil_env
 
 # data
-data_insertion.log
+*.log
 future_temperature_data.json
 temperature_data.json
 oilcsvtojson.py
