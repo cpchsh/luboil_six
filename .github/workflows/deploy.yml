@@ -23,6 +23,6 @@ jobs:
     
     - name: Build and Start Docker Containers
       run: |
-        cd ~/Desktop/Develope/luboil_six &&
+        cd ~/luboil_six &&
         docker-compose down &&
         docker-compose up -d --build
