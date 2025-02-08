@@ -49,17 +49,37 @@ const ChartDisplay = ({ data, title, futureData = [], colorMap }) => {
 
     // 依title 判斷要顯示幾天
     // - 若 title 含 "Predictions" => 只顯示近15天
-    // - 否則 => 近30天
+    // - 否則 => 近90天
     const daysToShow = title.includes("Predictions") ? 15: 90;
 
     // 1) 過濾「最近N天」歷史資料
     const limitedData = filterByDays(data, daysToShow);
     
 
+    // 2) 找到歷史資料「最後一天」（若沒有歷史資料，就直接跳過）
+    const sortedData = [...limitedData].sort(
+      (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+    );
+    const lastHistTimestamp = sortedData.length
+      ? new Date(sortedData[sortedData.length -1].timestamp)
+      : null;
+
+    // 3) 將預測資料的時間強制從「歷史最後一天+1」開始
+    //    這樣就不會跟最後一天重疊
+    let filteredFuture = [];
+    if (futureData.length && lastHistTimestamp) {
+      const nextDayOfLastHist = new Date(
+        lastHistTimestamp.getTime() + 24 * 60 * 60 * 1000
+      );
+      // 只保留 timestamp >= nextDayOfLastHist
+      filteredFuture = futureData.filter(
+        (item) => new Date(item.timestamp) >= nextDayOfLastHist
+      );
+    }
     // 將歷史及未來的timestamp全部收集起來
     const allTimestamps = [
-      ...limitedData.map((item) => item.timestamp),
-      ...(futureData ? futureData.map((item) => item.timestamp) : [])
+      ...limitedData.map((d) => d.timestamp),
+      ...filteredFuture.map((d) => d.timestamp),
     ]
 
     const timestamps = Array.from(new Set(allTimestamps)).sort(
@@ -70,7 +90,7 @@ const ChartDisplay = ({ data, title, futureData = [], colorMap }) => {
     const products = Array.from(
       new Set([
         ...limitedData.map((item) => item.productName),
-        ...(futureData ? futureData.map((item) => item.productName) : []),
+        ...filteredFuture.map((item) => item.productName),
       ])
     );
 
@@ -122,7 +142,7 @@ const ChartDisplay = ({ data, title, futureData = [], colorMap }) => {
       const predictionDataset = {
             label: `${product} (Prediction)`,
             data: timestamps.map((timestamp) => {
-              const match = futureData.find(
+              const match = filteredFuture.find(
                 (item) => item.productName === product && item.timestamp === timestamp
               );
               return match ? parseFloat(match.quantity) : null;
@@ -135,7 +155,7 @@ const ChartDisplay = ({ data, title, futureData = [], colorMap }) => {
           }
       // 下界 (Lower Bound)
       const lowerBoundData =  timestamps.map((timestamp) =>{
-        const lbMatch = futureData.find(
+        const lbMatch = filteredFuture.find(
           (item) => item.productName === product && item.timestamp === timestamp 
         )?.lower_bound;
         return lbMatch !== undefined ? parseFloat(lbMatch) : null;
@@ -152,7 +172,7 @@ const ChartDisplay = ({ data, title, futureData = [], colorMap }) => {
 
       // 上界 (Upper Bound) - 將fill指向前一個資料集(即 lowerBoundDataset)
       const upperBoundData = timestamps.map((timestamp) => {
-        const ubMatch = futureData.find(
+        const ubMatch = filteredFuture.find(
           (item) => item.productName === product && item.timestamp === timestamp 
         )?.upper_bound;
         return ubMatch !== undefined ? parseFloat(ubMatch) : null;
