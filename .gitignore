@@ -2,7 +2,7 @@ node_modules/
 logs/
 .env
 luboil_env
-
+querySql.py
 # data
 *.log
 future_temperature_data.json

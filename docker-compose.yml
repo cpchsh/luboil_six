@@ -32,50 +32,69 @@ services:
     volumes:
       - mongo_data:/data/db # 將/data/db指向名為 'mongo_data'的volumns
 
-  
+
   #一次性容器，用來執行搬移全部資料的update_mongodb.py
-  data_inserter:
+  data_query:
     image: python:3.9
-    #container_name: data_inserter
-    depends_on:
-      - mongo
     volumes:
       # 將本機當前資料夾(包含 update_mongodb.py)掛載到容器的 /app
       - ./:/app
     working_dir: /app 
     # command: 先安裝 pymongo，再執行 updae_mongodb.py
+    environment:
+      - DB_SERVER=${DB_SERVER}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
     command: >
       bash -c "
-        pip install pymongo &&
-        python delete_all_data.py &&
-        python update_mongodbnew.py
-      "
+        pip install pymssql &&
+        python querySql.py
+
+  
+  # #一次性容器，用來執行搬移全部資料的update_mongodb.py
+  # data_inserter:
+  #   image: python:3.9
+  #   #container_name: data_inserter
+  #   depends_on:
+  #     - mongo
+  #   volumes:
+  #     # 將本機當前資料夾(包含 update_mongodb.py)掛載到容器的 /app
+  #     - ./:/app
+  #   working_dir: /app 
+  #   # command: 先安裝 pymongo，再執行 updae_mongodb.py
+  #   command: >
+  #     bash -c "
+  #       pip install pymongo &&
+  #       python delete_all_data.py &&
+  #       python update_mongodbnew.py
+  #     "
     
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-      MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
-  # 執行predict_future_quantity.py
-  predictor:
-    image: python:3.9
-    #container_name: predictor
-    depends_on:
-      - mongo
-    volumes:
-      - ./:/app
-    working_dir: /app
-    command: >
-      bash -c "
-        pip install --no-cache-dir pymongo prophet &&
-        python predict_future_quantity.py &&
-        python predict_future_quantityMonthly.py
-      "
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-      MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+  #     MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+  #     MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+  #     MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
+  # # 執行predict_future_quantity.py
+  # predictor:
+  #   image: python:3.9
+  #   #container_name: predictor
+  #   depends_on:
+  #     - mongo
+  #   volumes:
+  #     - ./:/app
+  #   working_dir: /app
+  #   command: >
+  #     bash -c "
+  #       pip install --no-cache-dir pymongo prophet &&
+  #       python predict_future_quantity.py &&
+  #       python predict_future_quantityMonthly.py
+  #     "
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+  #     MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+  #     MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+  #     MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
 
 
   # #合併 csv_data_inserter + predictor 

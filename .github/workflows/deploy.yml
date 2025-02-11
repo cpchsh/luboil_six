@@ -11,6 +11,13 @@ jobs:
   deploy:
     runs-on: [self-hosted]
 
+    # 在 job 層級聲明環境變數，透過 secrets 注入
+    env:
+      DB_SERVER: ${{ secrets.DB_SERVER }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -19,10 +26,14 @@ jobs:
     - name: Sync Latest Code to Remote Directory
       run: |
         mkdir -p ~/luboil_six
-        rsync -av --delete --exclude '*.csv' --exclude '*.sh' --exclude '*.log' --exclude '.env' --exclude '*.json' --exclude '*.pkl' "$GITHUB_WORKSPACE"/ ~/luboil_six/
+        rsync -av --delete --exclude '*.csv' --exclude '*.sh' --exclude 'querySql.py' --exclude '*.log' --exclude '.env' --exclude '*.json' --exclude '*.pkl' "$GITHUB_WORKSPACE"/ ~/luboil_six/
     
     - name: Build and Start Docker Containers
       run: |
         cd ~/luboil_six &&
         docker-compose down &&
+        DB_SERVER=${{ secrets.DB_SERVER }} \
+        DB_USER=${{ secrets.DB_USER }} \
+        DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+        DB_NAME=${{ secrets.DB_NAME }} \
         docker-compose up -d --build
