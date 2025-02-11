@@ -49,7 +49,7 @@ services:
     command: >
       bash -c "
         pip install pymssql &&
-        python querySql.py
+        python querySql.py"
 
   
   # #一次性容器，用來執行搬移全部資料的update_mongodb.py

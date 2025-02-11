@@ -26,7 +26,7 @@ jobs:
     - name: Sync Latest Code to Remote Directory
       run: |
         mkdir -p ~/luboil_six
-        rsync -av --delete --exclude '*.csv' --exclude '*.sh' --exclude 'querySql.py' --exclude '*.log' --exclude '.env' --exclude '*.json' --exclude '*.pkl' "$GITHUB_WORKSPACE"/ ~/luboil_six/
+        rsync -av --delete --exclude '*.csv' --exclude '*.sh' --exclude '*.txt' --exclude 'querySql.py' --exclude '*.log' --exclude '.env' --exclude '*.json' --exclude '*.pkl' "$GITHUB_WORKSPACE"/ ~/luboil_six/
     
     - name: Build and Start Docker Containers
       run: |
