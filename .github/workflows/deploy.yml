@@ -10,14 +10,6 @@ on:
 jobs:
   deploy:
     runs-on: [self-hosted]
-
-    # 在 job 層級聲明環境變數，透過 secrets 注入
-    env:
-      DB_SERVER: ${{ secrets.DB_SERVER }}
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_NAME: ${{ secrets.DB_NAME }}
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -32,8 +24,4 @@ jobs:
       run: |
         cd ~/luboil_six &&
         docker-compose down &&
-        DB_SERVER=${{ secrets.DB_SERVER }} \
-        DB_USER=${{ secrets.DB_USER }} \
-        DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-        DB_NAME=${{ secrets.DB_NAME }} \
         docker-compose up -d --build
