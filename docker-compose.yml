@@ -42,10 +42,10 @@ services:
     working_dir: /app 
     # command: 先安裝 pymongo，再執行 updae_mongodb.py
     environment:
-      - DB_SERVER: "${DB_SERVER}"
-      - DB_USER: "${DB_USER}"
-      - DB_PASSWORD: "${DB_PASSWORD}"
-      - DB_NAME: "${DB_NAME}"
+      DB_SERVER: "${DB_SERVER}"
+      DB_USER: "${DB_USER}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      DB_NAME: "${DB_NAME}"
     command: >
       bash -c "
         pip install pymssql &&
