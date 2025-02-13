@@ -44,6 +44,7 @@ services:
     command: >
       bash -c "
         pip install pymssql &&
+        pip install python-dotenv &&
         python querySql.py"
 
   
