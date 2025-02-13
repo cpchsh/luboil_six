@@ -33,7 +33,7 @@ services:
       - mongo_data:/data/db # 將/data/db指向名為 'mongo_data'的volumns
 
 
-  #一次性容器，用來執行搬移全部資料的update_mongodb.py
+  #一次性容器，用來執行query
   data_query:
     image: python:3.9
     volumes:
